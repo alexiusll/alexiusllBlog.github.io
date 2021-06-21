@@ -1,5 +1,5 @@
 ---
-layout: itk-js
+layout: post
 title: 实现处理DICOM数据，并在VTKJS中渲染
 date: 2021-06-21 15:06:52
 tags:
@@ -10,6 +10,7 @@ tags:
 如果想用 .dcm 的文件直接进行渲染似乎是行不通的，于是我看到了一个git 上面的issue
 https://github.com/Kitware/vtk-js/issues/678
 官方说：
+
 #### jourdain commented on 30 Mar 2018
 To read a `vti` file you need to use that [reader](https://github.com/Kitware/vtk-js/tree/master/Sources/IO/XML/XMLImageDataReader) like [here](https://github.com/Kitware/vtk-js/blob/master/Examples/Applications/VolumeViewer/index.js#L66-L67)
 
@@ -235,7 +236,7 @@ Promise.all(fetchFiles).then((files) => {
 最后我又偷了一个volume 的代码，我发现终于渲染出来了！问题就是好像是出在 **lookupTable** 和 **piecewiseFunction** 的设置上面，如果没有设置它们可能就是渲染不出来影像。于是一个很坑的地方出现了，我之前调试代码的时候，一直没有把UI这个东西加上，我以为不会对结果造成影像，于是**lookupTable** 和 **piecewiseFunction** 的参数，我也学示例代码里面写，把它们留白。但是实际上如果加了 **UI**,就会自动设置它们的参数，坑！！！
 
 ### 最后渲染结果：
-![1](.\2021-06-21-实现处理DICOM数据，并在VTKJS中渲染\1.png)
+![](1.png)
 
 最后由于loader可能还是有问题，所以UI界面不能正常展示，但是基础的功能有了。
 
