@@ -1,11 +1,15 @@
 ---
 title: Kitware/react-vtk-js 初探
 date: 2021-06-21 15:53:30
+categories:
+- 医学影像处理
 tags:
+- 医学影像处理
 ---
 
 Kitware/react-vtk-js 是vtk组织官方出的react vtk组件，运用于医学成像。
 git地址: https://github.com/alexiusll/react-vtk-js
+<!-- more -->
 
 ### 官方简介（机翻预警）：
 基于React的声明式vtk.js可视化渲染管线。换句话说，这个项目允许你利用vtk.js使用React/XML语法来描述你的3D场景。有点像X3dom的X3D格式，除了这里我们利用了React组件，可以扩展到构建自己的工具。
@@ -19,7 +23,6 @@ git地址: https://github.com/alexiusll/react-vtk-js
 Kitware/react-vtk-js的效果：
 
 ![1](2021-06-21-Kitware-react-vtk-js-初探/14391549-07fd54019af0d586.png)
-
 
 ### 1.首先把 Kitware/react-vtk-js 代码克隆到自己的仓库
 

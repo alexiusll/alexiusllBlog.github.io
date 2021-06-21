@@ -2,11 +2,15 @@
 layout: post
 title: 实现处理DICOM数据，并在VTKJS中渲染
 date: 2021-06-21 15:06:52
+categories:
+- 医学影像处理
 tags:
+- 医学影像处理
 ---
 
 关于 Dicom Image Volume Rendering
 如果想使用 vtk 来进行医学影像的体绘制的话，必须使用它们推荐的 .vti格式的文件
+<!-- more -->
 如果想用 .dcm 的文件直接进行渲染似乎是行不通的，于是我看到了一个git 上面的issue
 https://github.com/Kitware/vtk-js/issues/678
 官方说：
