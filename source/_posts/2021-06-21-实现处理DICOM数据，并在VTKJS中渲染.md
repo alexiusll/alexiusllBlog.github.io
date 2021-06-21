@@ -56,7 +56,7 @@ The used webWorkerPool is returned to enable resource cleanup, if required.
 #### (0) 巨坑！！首先需要配置webpack的环境
 如果是使用了umi，请在config下加入新的copy配置参数：
 提示：umi里面集成了 CopyPlugin ，如果利用 chainWebpack 来配置 CopyPlugin 的话，可能会覆盖掉它自己生成的配置，导致Public目录失效，坑！！！
-```
+```javascript
  copy: [
     // 设置要复制到输出目录的文件或文件夹
     {
@@ -78,7 +78,7 @@ The used webWorkerPool is returned to enable resource cleanup, if required.
   ],
 ```
 如果是正常的webpack，请参考官方示例下的webpack
-```
+```javascript
   plugins: [
     new CopyPlugin([
       {
@@ -103,7 +103,7 @@ The used webWorkerPool is returned to enable resource cleanup, if required.
 
 #### (1) 首先需要发网络请求
 
-```
+```javascript
 await axios
       .get(
         'http://{DICOM_IP}/series/bfd34afd-f97a9f7c-c0551428-93a0c48a-0285c8ce?_=1624179883017',
@@ -127,7 +127,7 @@ await axios
 反正，需要获取到一个 文件的列表
 
 #### (2) 转换图片数据
-```
+```javascript
 Promise.all(fetchFiles).then((files) => {
       readImageDICOMFileSeries(files).then(({ webWorker, image }) => {
         // webWorker.terminate();
@@ -143,7 +143,7 @@ Promise.all(fetchFiles).then((files) => {
 
 #### (3) 坑中坑！利用VTK渲染 imageData
 
-```
+```javascript
         const view3d = document.getElementById('view3d');
         const fullScreenRenderer = vtkFullScreenRenderWindow.newInstance({
           rootContainer: view3d,

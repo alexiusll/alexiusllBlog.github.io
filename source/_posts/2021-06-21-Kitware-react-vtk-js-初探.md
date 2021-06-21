@@ -7,7 +7,7 @@ tags:
 Kitware/react-vtk-js 是vtk组织官方出的react vtk组件，运用于医学成像。
 git地址: https://github.com/alexiusll/react-vtk-js
 
-###官方简介（机翻预警）：
+### 官方简介（机翻预警）：
 基于React的声明式vtk.js可视化渲染管线。换句话说，这个项目允许你利用vtk.js使用React/XML语法来描述你的3D场景。有点像X3dom的X3D格式，除了这里我们利用了React组件，可以扩展到构建自己的工具。
 
 该项目于2021年1月份创建，属于是很新的React组件，现在迭代的速度也很快。
@@ -39,7 +39,7 @@ Kitware/react-vtk-js 的项目结构包括自己封装的vtk组件，和使用�
 
 ### 2.体绘制实现分析
 
-```react
+```javascript
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -87,7 +87,7 @@ VTI文件大多属于Kitware公司的ParaView。ParaView是一种需要将大型
 
 它的 props
 
-```react
+```javascript
   // The ID used to identify this component.
   id: PropTypes.string,
   //  downstream  连接 端口
@@ -111,7 +111,7 @@ VTI文件大多属于Kitware公司的ParaView。ParaView是一种需要将大型
 ```
 
 它的默认参数:
-```react
+```javascript
   port: 0,
   vtkClass: '',
   renderOnUpdate: true,
@@ -120,7 +120,7 @@ VTI文件大多属于Kitware公司的ParaView。ParaView是一种需要将大型
 
 体渲染的时候，vtkClass 被设置为 vtkXMLImageDataReader，看看它做了什么：
 
-```react
+```javascript
 import vtk from '@kitware/vtk.js/vtk.js';
 
 if (vtkClass && (!previous || vtkClass !== previous.vtkClass)) {
@@ -135,7 +135,7 @@ if (vtkClass && (!previous || vtkClass !== previous.vtkClass)) {
 它通过 vtkClass 从vtk中拿了一个 reader
 这里需要参考一下 vtk 的源码:
 
-```react
+```javascript
 var constructor = factoryMapping[obj.vtkClass];
 ```
 
@@ -147,7 +147,7 @@ https://kitware.github.io/vtk-js/api/IO_XML_XMLImageDataReader.html
 #### VolumeController
 
 它的 props
-```react
+```javascript
 VolumeController.defaultProps = {
   size: [400, 150],
   rescaleColorMap: true,
@@ -170,7 +170,7 @@ VolumeController.propTypes = {
 
 
 #### VolumeRepresentation
-```react
+```javascript
 /**
  * VolumeRepresentation is responsible to convert a vtkPolyData into rendering
  * VolumeRepresentation负责将vtkPolyData转换为渲染
@@ -183,7 +183,7 @@ VolumeController.propTypes = {
 
 它的props
 
-```react
+```javascript
 VolumeRepresentation.defaultProps = {
   colorMapPreset: 'erdc_rainbow_bright',
   colorDataRange: 'auto',
@@ -216,7 +216,7 @@ VolumeRepresentation.propTypes = {
 #### 最重要的 view
 
 很长的 props 
-```react
+```javascript
 View.defaultProps = {
   style: {
     width: '100%',
