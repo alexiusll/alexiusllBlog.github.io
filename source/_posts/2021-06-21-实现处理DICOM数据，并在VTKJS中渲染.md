@@ -247,4 +247,5 @@ Promise.all(fetchFiles).then((files) => {
 
 ### TODO...
 这次被这个问题坑了很久，感觉还是对VTKJS的渲染不太熟悉
-后续还是得熟悉一下 VTKJS 的代码，把现在的代码结构改成 VTKJS代理的那个实现方式
+后续还是得熟悉一下 VTKJS 的代码，把现在的代码结构改成 VTKJS代理的那个实现方式...
+
