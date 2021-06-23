@@ -1,6 +1,10 @@
 # alexiusll的个人博客
 我的个人博客
 
+域名已经申请，可以直接访问：
+
+https://www.alexiusll.top/
+
 ## 💙v1.0 样式
 
 ![1.0样式](https://github.com/alexiusll/alexiusll.github.io/blob/main/GitImages/100.png?raw=true)
