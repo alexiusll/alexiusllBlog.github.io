@@ -5,11 +5,11 @@
 # Site
 title: alexiusll 的博客
 subtitle: ""
-description: ""
-keywords:
+description: "alexiusll 的博客"
+keywords: 医疗,博客,web渲染,前端
 author: alexiusll
 language: zh-CN
-timezone: ""
+timezone: "Asia/Shanghai"
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
@@ -31,7 +31,7 @@ i18n_dir: :lang
 skip_render:
 
 # Writing
-new_post_name: /:year/:month/:month-:day-:title.md # 生成的文件名带上日期，并且在对应年份和月份下创建
+new_post_name: /:year/:month/:day-:title.md # 生成的文件名带上日期，并且在对应年份和月份下创建
 default_layout: post
 titlecase: false # Transform title into titlecase
 external_link:
