@@ -247,59 +247,14 @@
 
       
           <h2 id="🔷v1-0-简要"><a href="#🔷v1-0-简要" class="headerlink" title="🔷v1.0 简要"></a>🔷v1.0 简要</h2><p>​    原本我写的公开文章一直是保存在简书的，但是最近在简书更新文章的时候，发现文章发表需要一段时间的审核，不能立即看到，还有一个问题是担心简书的安全性，如果哪天简书删库的了（虽然基本不可能，我的文章可能就都消失了。</p>
-<p>​    利用Hexo来搭建博客实际上就是在本地写MarkDown文本，md文件是非常好备份的，所以安全性实际上非常好，现在写好的md文件实际上都存在了github上，我想github应该是永远不会倒闭的..</p>
-<p>​    现在博客1.0版本已经搭建好了，我还把官方样式改成了普罗米亚的，部署在这个域名下：</p>
-<p>​    <a target="_blank" rel="noopener" href="https://www.alexiusll.top/">https://www.alexiusll.top/</a></p>
-<p>​    在2022年6月之前应该都是可以访问的，域名过期了可能就要考虑是否续费，还是换域名了。</p>
-<p>​    <img src="/2021/06/23/2021-06-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1-0/100.png" alt="部署图"></p>
-<p>​    </p>
-<h2 id="📋v1-0-主要框架和技术"><a href="#📋v1-0-主要框架和技术" class="headerlink" title="📋v1.0 主要框架和技术"></a>📋v1.0 主要框架和技术</h2><ul>
-<li>使用了一个静态的博客生成器 Hexo</li>
-</ul>
-<p>官方网站：</p>
-<p><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/">https://hexo.io/zh-cn/</a></p>
-<p>其实中文的文档内容不是很全，如果要看完全体的话请切换语言为英文。</p>
-<ul>
-<li>主题使用了一个最主流的 Next</li>
-</ul>
-<p>中文网站：</p>
-<p><a target="_blank" rel="noopener" href="http://theme-next.iissnan.com/">http://theme-next.iissnan.com/</a></p>
-<p>应该是现在用的最多的一种主题，所以质量还是有保证，扩展性也很强。</p>
-<h2 id="📃v1-0-实现的功能"><a href="#📃v1-0-实现的功能" class="headerlink" title="📃v1.0 实现的功能"></a>📃v1.0 实现的功能</h2><ul>
-<li><p>写博文，博文分类，归档，标签 （基于Hexo）</p>
-</li>
-<li><p>评论 （基于valine）</p>
-</li>
-<li><p>显示 阅读次数 （基于valine）</p>
-</li>
-<li><p>百度统计接入 （似乎也没什么用..可以考虑删了）</p>
-</li>
-<li><p>显示文章字数和大致阅读时间</p>
-</li>
-<li><p>修改 Next 的原生样式</p>
-</li>
-</ul>
-<h2 id="❌部署过程中存在的坑"><a href="#❌部署过程中存在的坑" class="headerlink" title="❌部署过程中存在的坑"></a>❌部署过程中存在的坑</h2><ul>
-<li><p><strong>travis-ci 的部署文件</strong></p>
-<p>中文文档里面给的是用不了的，需要改一下branch，还有install，node_js</p>
-<p>配置文件：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">sudo:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">node_js</span></span><br><span class="line"><span class="attr">node_js:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="number">14</span> <span class="comment"># use nodejs v14 LTS</span></span><br><span class="line"><span class="attr">cache:</span> <span class="string">npm</span></span><br><span class="line"><span class="attr">install:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">yarn</span></span><br><span class="line"><span class="attr">branches:</span></span><br><span class="line">  <span class="attr">only:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">main</span> <span class="comment"># build master branch only</span></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">hexo</span> <span class="string">generate</span> <span class="comment"># generate static files</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">provider:</span> <span class="string">pages</span></span><br><span class="line">  <span class="attr">skip-cleanup:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">github-token:</span> <span class="string">$GH_TOKEN</span></span><br><span class="line">  <span class="attr">keep-history:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">on:</span></span><br><span class="line">    <span class="attr">branch:</span> <span class="string">main</span></span><br><span class="line">  <span class="attr">local-dir:</span> <span class="string">public</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="📕存在的问题"><a href="#📕存在的问题" class="headerlink" title="📕存在的问题"></a>📕存在的问题</h2><ul>
-<li><p>由于Hexo本质是其实是一个生成静态页面的工具，实际上是没有后台的，于是它有一些根本性的问题</p>
-<p>1.每次编译，所有的md文件都需要重新编译处理一次，编译速度会随着文章数量的增长而上升。所以未来有大量文章的情况下，可能会出现编译速度的问题，目前还没有看到一些好的解决方案，现在方案可以先凑合着用着。</p>
-<p>2.需要储存数据的场景下，例如评论，得储存在一些第三方的存储服务器上，例如Leancloud</p>
-</li>
-<li><p>对于图片的处理，Hexo官方的方案不是很好：</p>
-<p>在本地写md的时候，图片的url可能会制定到一个相对路径下，例如 xxx/1.png ，在本地就可以看到这个图片，没有什么问题。但是到了部署的时候，得使用url 1.png ，要去掉 xxx/ 这个前缀，要不然到了线上，这个图片就不显示。官方的意思的是我们本地写的时候应该直接就写成 1.png ，不加前缀，但是这样不是很方便，于是我加了一个国人写的插件 ： hexo-asset-link ，每次编译都要把路径重新制定一下。</p>
-</li>
-</ul>
-<h2 id="🟠未来展望"><a href="#🟠未来展望" class="headerlink" title="🟠未来展望"></a>🟠未来展望</h2><p>由于Hexo搭建博客存在一些根本性的问题，未来可能采取的方案有：</p>
-<p>1.直接搭建有后台系统的博客，但是可能得花费的时间很长，而且做的效果也不好很好</p>
-<p>2.调研一些其他的博客系统 例如 wordpress</p>
-<p>3.编译多个Hexo的网站，将比较老的文章放到另外一个Hexo网站中，不再进行编译</p>
-<p>总而言之，现在的方案应该是能支持1-2年的使用了，问题还是可以慢慢的解决。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/06/23/2021-06-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1-0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
