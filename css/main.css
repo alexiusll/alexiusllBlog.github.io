@@ -276,6 +276,9 @@ kbd {
   padding: 0.1em 0.3em;
   white-space: nowrap;
 }
+.vwrap {
+  border: 1px solid #c5c5c5 !important;
+}
 .table-container {
   overflow: auto;
 }
@@ -1173,7 +1176,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #cdff54;
+  background: #be93ab;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
