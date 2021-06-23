@@ -3,7 +3,7 @@
 
 ## 💙v1.0 样式
 
-
+![1.0样式](https://github.com/alexiusll/alexiusll.github.io/blob/main/GitImages/100.png?raw=true)
 
 ## 🎈实现方式
 
