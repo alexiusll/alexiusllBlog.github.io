@@ -22,23 +22,23 @@ git地址: https://github.com/alexiusll/react-vtk-js
 
 Kitware/react-vtk-js的效果：
 
-![1](2021-06-21-Kitware-react-vtk-js-初探/14391549-07fd54019af0d586.png)
+![1](21-Kitware-react-vtk-js-初探/14391549-07fd54019af0d586.png)
 
 ### 1.首先把 Kitware/react-vtk-js 代码克隆到自己的仓库
 
 注意！！！这个项目没有yarn.lock 文件，所以如果要安装依赖，只能使用npm install ，然后再使用yarn import 来生成相应的yarn.lock。
 
-![项目结构](2021-06-21-Kitware-react-vtk-js-初探/14391549-eb6200a5174c2c04.png)
+![项目结构](21-Kitware-react-vtk-js-初探/14391549-eb6200a5174c2c04.png)
 
 Kitware/react-vtk-js 的项目结构包括自己封装的vtk组件，和使用例子，使用例里面依赖了自己封装的vtk组件。
 
-![使用例](2021-06-21-Kitware-react-vtk-js-初探/14391549-9a8f6cd1e90841d7.png)
+![使用例](21-Kitware-react-vtk-js-初探/14391549-9a8f6cd1e90841d7.png)
 
 使用 yarn dev 开启测试服务器，webpack执行打包操作，webpack打包的时间比较长，然后就可以看到官方的使用例。
 
 一个医学影像体绘制的例子:
 
-![体绘制](2021-06-21-Kitware-react-vtk-js-初探/14391549-6c203e1d926871be.png)
+![体绘制](21-Kitware-react-vtk-js-初探/14391549-6c203e1d926871be.png)
 
 ### 2.体绘制实现分析
 
@@ -169,7 +169,7 @@ VolumeController.propTypes = {
 
 它提供了一个 控制窗口
 
-![VolumeController](2021-06-21-Kitware-react-vtk-js-初探/14391549-e6d57d0d6272d454.png)
+![VolumeController](21-Kitware-react-vtk-js-初探/14391549-e6d57d0d6272d454.png)
 
 
 #### VolumeRepresentation
