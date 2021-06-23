@@ -31,7 +31,7 @@ i18n_dir: :lang
 skip_render:
 
 # Writing
-new_post_name: :year-:month-:day-:title.md # 生成的文件名带上日期
+new_post_name: /:year/:month/:month-:day-:title.md # 生成的文件名带上日期，并且在对应年份和月份下创建
 default_layout: post
 titlecase: false # Transform title into titlecase
 external_link:
