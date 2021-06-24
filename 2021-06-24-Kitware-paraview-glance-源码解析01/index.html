@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+<meta name="baidu-site-verification" content="code-ipFSuNxhZV" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"alexiusll.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="🔷简介paraview-glance 是kitware组织开源一个像vtk的最佳实践的东西，阅片的效果还不错：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kitware&#x2F;paraview-glance 源码解析01">
+<meta property="og:url" content="https://alexiusll.github.io/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/index.html">
+<meta property="og:site_name" content="alexiusll 的博客">
+<meta property="og:description" content="🔷简介paraview-glance 是kitware组织开源一个像vtk的最佳实践的东西，阅片的效果还不错：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alexiusll.github.io/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/1.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/2.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/3.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/4.png">
+<meta property="article:published_time" content="2021-06-24T07:11:23.000Z">
+<meta property="article:modified_time" content="2021-06-24T09:43:11.764Z">
+<meta property="article:author" content="alexiusll">
+<meta property="article:tag" content="医学影像处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://alexiusll.github.io/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/1.png">
+
+<link rel="canonical" href="https://alexiusll.github.io/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kitware/paraview-glance 源码解析01 | alexiusll 的博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?80dbe2fa10c94d76691cf667b9e57694";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">alexiusll 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://alexiusll.github.io/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="alexiusll">
+      <meta itemprop="description" content="alexiusll 的博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alexiusll 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kitware/paraview-glance 源码解析01
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-24 15:11:23" itemprop="dateCreated datePublished" datetime="2021-06-24T15:11:23+08:00">2021-06-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">医学影像处理</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/" class="post-meta-item leancloud_visitors" data-flag-title="Kitware/paraview-glance 源码解析01" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="🔷简介"><a href="#🔷简介" class="headerlink" title="🔷简介"></a>🔷简介</h2><p>paraview-glance 是kitware组织开源一个像vtk的最佳实践的东西，阅片的效果还不错：</p>
+<span id="more"></span>
+
+<p><img src="/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/1.png" alt="1"></p>
+<p>它的代码仓库在：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/alexiusll/paraview-glance">https://github.com/alexiusll/paraview-glance</a></p>
+<p>后续影像系统的开发可能得参考这个库来做，所以得看看它的源码，了解一下官方是怎么实现这个效果的。</p>
+<h2 id="🔵开启dev服务器"><a href="#🔵开启dev服务器" class="headerlink" title="🔵开启dev服务器"></a>🔵开启dev服务器</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> https://github.com/Kitware/paraview-glance.git</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> paraview-glance/</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run dev</span></span><br></pre></td></tr></table></figure>
+
+<p>实际上安装了依赖之后，直接使用</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> yarn dev</span></span><br></pre></td></tr></table></figure>
+
+<p>就可以执行了。</p>
+<p>依然要注意这个repo没有使用yarn.lock，所以请不要用yarn指令直接安装依赖</p>
+<p>开启dev服务器之后，webpack会开始工作…</p>
+<p>等编译好后，直接进入 <a target="_blank" rel="noopener" href="http://127.0.0.1:9999/">http://127.0.0.1:9999/</a> 就可以了</p>
+<h3 id="❌窗口出现错位的问题"><a href="#❌窗口出现错位的问题" class="headerlink" title="❌窗口出现错位的问题"></a>❌窗口出现错位的问题</h3><p>拉取最新的代码的时候，窗口会出现错位的问题，3D的地方就是空的，看来源码有点问题啊…</p>
+<p><img src="/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/2.png" alt="2"></p>
+<p>打算尝试解决一下这个问题。</p>
+<p>但是看了一下issue里面，似乎没有人去提这个问题，于是我去提了一下，现在还没有人回复（第一次提issue，哈哈哈）。</p>
+<p>目前来说，只能先回退版本了，我发现回到v4.14.0的版本是正确的，那么就先在这个版本上新建一个分支来继续吧。</p>
+<h2 id="🟦框架简介"><a href="#🟦框架简介" class="headerlink" title="🟦框架简介"></a>🟦框架简介</h2><p>这个项目用了VUE的框架来做，我之前都是用的React框架，对这个不熟悉，悲…</p>
+<h3 id="先从依赖开始看起（部分机翻）："><a href="#先从依赖开始看起（部分机翻）：" class="headerlink" title="先从依赖开始看起（部分机翻）："></a>先从依赖开始看起（部分机翻）：</h3><ul>
+<li>“@girder/components”: “^2.2.4”,                        kitware组织自己的组件库 （Vue + Vuetify）</li>
+<li>  “@linusborg/vue-simple-portal”: “^0.1.3”,      Vue的简单门户实现，用于将槽内容挂载到另一个元素</li>
+<li>  “itk”: “13.1.4”,                                                       用来转换文件格式用的</li>
+<li>  “mousetrap”: “^1.6.3”,                                        简单的库处理键盘快捷键</li>
+<li>  “pug”: “^3.0.0”,                                                     一种用于编写HTML的干净、空格敏感的模板语言</li>
+<li>  “pug-plain-loader”: “^1.0.0”,                              pug的loader</li>
+<li>  “typeface-roboto”: “0.0.75”,                               CSS和web字体文件，轻松地自我主机“Roboto”。</li>
+<li>  “vtk.js”: “15.4.0”,                                                   核心库，渲染医学影像</li>
+<li>  “vue”: “2.6.11”,                                                      使用了vue作为前端框架</li>
+<li>  “vue-cli-plugin-vuetify”: “^2.0.7”,                       A Vue CLI 3用于安装Vuetify的插件</li>
+<li>  “vuetify”: “2.3.4”,                                                  Vue 上面的UI库</li>
+<li>  “vuex”: “^3.5.1”,                                                    Vuex 是一个专为 Vue.js 应用程序开发的<strong>状态管理模式</strong>。</li>
+<li>  “webworker-promise”: “0.4.2”,                          一个基于“webworkers”的 small promise </li>
+<li>  “workbox-sw”: “2.1.2”                                          该<code>workbox-sw</code>模块提供了一种极其简单的方式来启动和运行 Workbox 模块</li>
+</ul>
+<h3 id="总体文件结构"><a href="#总体文件结构" class="headerlink" title="总体文件结构"></a>总体文件结构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">/build                      构建项目的配置文件</span><br><span class="line">/data						项目的示例数据</span><br><span class="line">/dist						构建的文件</span><br><span class="line">/documentation				文档</span><br><span class="line">/externals					第三方库</span><br><span class="line">/itk						将会打包到生成的文件中</span><br><span class="line">/node_modules				依赖库</span><br><span class="line">/src						项目入口，核心</span><br><span class="line">/static						静态文件，webpack会将它打包到生成的文件中</span><br><span class="line">.babelrc					Babel 的配置文件</span><br><span class="line">.browserslistrc				配置浏览器版本，这个配置能够分享目标浏览器和nodejs版本在不同的前端工具</span><br><span class="line">.editorconfig				可以帮助开发者在不同的编辑器和 IDE 之间定义和维护一致的代码风格</span><br><span class="line">.eslintignore				eslint 忽略规则</span><br><span class="line">.eslintrc.js				eslint 规则</span><br><span class="line">.gitattributes			    github配置，用来识别语言等</span><br><span class="line">.gitignore					github 忽略规则</span><br><span class="line">.npmignore					npm打包的忽略规则</span><br><span class="line">.travis.yml					自动化部署配置</span><br><span class="line">CONTRIBUTING.md				如何进行贡献的说明</span><br><span class="line">COPYRIGHT					版权信息</span><br><span class="line">LICENSE						授权协议</span><br><span class="line">package-lock.json			包管理lock</span><br><span class="line">package.json				包管理配置</span><br><span class="line">prettier.config.js			代码格式配置</span><br><span class="line">README.md</span><br><span class="line">yarn.lock</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="🟦模块分析"><a href="#🟦模块分析" class="headerlink" title="🟦模块分析"></a>🟦模块分析</h2><h3 id="🟢代码执行过程"><a href="#🟢代码执行过程" class="headerlink" title="🟢代码执行过程"></a>🟢代码执行过程</h3><p>/static/index.html</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;root-container&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> container = <span class="built_in">document</span>.querySelector(<span class="string">&#x27;#root-container&#x27;</span>);</span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> glanceInstance = Glance.createViewer(container);</span></span><br><span class="line"><span class="javascript">    glanceInstance.processURLArgs();</span></span><br><span class="line"><span class="javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>**Glance.createViewer(container) **  这里创建Viewer</p>
+<p>/src/app.js  下的 createViewer 方法</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  <span class="attr">el</span>: container, <span class="comment">// 提供一个在页面上已存在的 DOM 元素作为 Vue 实例的挂载目标</span></span><br><span class="line">  <span class="attr">components</span>: &#123; App &#125;, <span class="comment">// 包含 Vue 实例可用组件的哈希表</span></span><br><span class="line">  store,</span><br><span class="line">  <span class="attr">provide</span>: GirderProvider,</span><br><span class="line">  <span class="comment">// if in the future we want to configure vuetify ourselves, see</span></span><br><span class="line">  <span class="comment">// https://github.com/girder/girder_web_components/blob/master/README.md</span></span><br><span class="line">  <span class="attr">vuetify</span>: <span class="keyword">new</span> Vuetify(girderVuetifyConfig),</span><br><span class="line">  proxyManager,</span><br><span class="line">  <span class="attr">template</span>: <span class="string">&#x27;&lt;App /&gt;&#x27;</span>, <span class="comment">// 一个字符串模板作为 Vue 实例的标识使用。</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>创建了一个 vue 组件</p>
+<p>它的选项可以参考：<a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/api/#%E9%80%89%E9%A1%B9-%E6%95%B0%E6%8D%AE">https://cn.vuejs.org/v2/api/#%E9%80%89%E9%A1%B9-%E6%95%B0%E6%8D%AE</a></p>
+<p>生成的APP来自</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">&#x27;paraview-glance/src/components/core/App&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="🟡app-和-landing-页面的切换"><a href="#🟡app-和-landing-页面的切换" class="headerlink" title="🟡app 和 landing 页面的切换"></a>🟡app 和 landing 页面的切换</h3><p>APP/template.html</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">v-content</span> <span class="attr">:class</span>=<span class="string">&quot;$style.appContent&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">landing</span></span></span><br><span class="line"><span class="tag">    <span class="attr">v-if</span>=<span class="string">&quot;landingVisible&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">key</span>=<span class="string">&quot;if-landing&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">v-on:open</span>=<span class="string">&quot;showFileUpload&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">v-on:open-urls</span>=<span class="string">&quot;autoLoadRemotes&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">v-on:open-files</span>=<span class="string">&quot;openFileList&quot;</span></span></span><br><span class="line"><span class="tag">  /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">layout-view</span> <span class="attr">v-else</span> <span class="attr">key</span>=<span class="string">&quot;if-landing&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">v-content</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的意思是</p>
+<p>如果 landingVisible 为 true ，则渲染 landing 组件</p>
+<p>如果 landingVisible 为 false，则渲染 layout-view 组件</p>
+<h3 id="🟡landing-模块分析"><a href="#🟡landing-模块分析" class="headerlink" title="🟡landing 模块分析"></a>🟡landing 模块分析</h3><p>路径 src/components/core/Landing</p>
+<p>其实这个地方分析的意义不大，就是一个选择数据的入口，我们核心要留给阅片的部分</p>
+<p><img src="/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/3.png" alt="3"></p>
+<p>部分template.html 代码</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">v-flex</span> <span class="attr">xs12</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;title&quot;</span>&gt;</span>Sample Data （这里是展示数据）<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">v-flex</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">v-flex</span></span></span><br><span class="line"><span class="tag">  <span class="attr">v-for</span>=<span class="string">&quot;(sample, i) in samples&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:key</span>=<span class="string">&quot;i&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:xs4</span>=<span class="string">&quot;$vuetify.breakpoint.mdAndUp&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:xs6</span>=<span class="string">&quot;$vuetify.breakpoint.sm&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:xs12</span>=<span class="string">&quot;$vuetify.breakpoint.xs&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">v-card</span> <span class="attr">:class</span>=<span class="string">&quot;$style.sampleData&quot;</span> <span class="attr">flat</span> <span class="attr">tile</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">v-img</span> <span class="attr">:src</span>=<span class="string">&quot;sample.image&quot;</span> <span class="attr">height</span>=<span class="string">&quot;300px&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span></span></span><br><span class="line"><span class="tag">      <span class="attr">:class</span>=<span class="string">&quot;$style.linkOverlay&quot;</span></span></span><br><span class="line"><span class="tag">      @<span class="attr">click.stop</span>=<span class="string">&quot;openSample(sample)&quot;</span></span></span><br><span class="line"><span class="tag">    &gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">:class</span>=<span class="string">&quot;$style.linkOverlayText&quot;</span> <span class="attr">class</span>=<span class="string">&quot;body-2&quot;</span>&gt;</span></span><br><span class="line">        &#123;&#123; sample.label &#125;&#125; (&#123;&#123; sample.size &#125;&#125;)</span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">:class</span>=<span class="string">&quot;$style.description&quot;</span> <span class="attr">v-if</span>=<span class="string">&quot;sample.description&quot;</span>&gt;</span></span><br><span class="line">          &#123;&#123; sample.description &#125;&#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">:class</span>=<span class="string">&quot;$style.acknowledgement&quot;</span> <span class="attr">v-if</span>=<span class="string">&quot;sample.acknowledgement&quot;</span>&gt;</span></span><br><span class="line">          &#123;&#123; sample.acknowledgement &#125;&#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">v-card</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">v-flex</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="🟡LayoutView模块"><a href="#🟡LayoutView模块" class="headerlink" title="🟡LayoutView模块"></a>🟡LayoutView模块</h3><p>template.html 代码</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">v-container</span> <span class="attr">fluid</span> <span class="attr">:class</span>=<span class="string">&quot;$style.container&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:class</span>=<span class="string">&quot;$style.grid&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:style</span>=<span class="string">&quot;&#123; gridTemplateRows, gridTemplateColumns &#125;&quot;</span></span></span><br><span class="line"><span class="tag">  &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span></span></span><br><span class="line"><span class="tag">      <span class="attr">:class</span>=<span class="string">&quot;$style.viewContainer&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">v-for</span>=<span class="string">&quot;(viewType, index) in views&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">v-bind:key</span>=<span class="string">&quot;`$&#123;index&#125;::$&#123;viewType&#125;`&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">v-show</span>=<span class="string">&quot;index &lt; visibleCount&quot;</span></span></span><br><span class="line"><span class="tag">    &gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">vtk-view</span></span></span><br><span class="line"><span class="tag">        <span class="attr">v-bind:view-type</span>=<span class="string">&quot;viewType&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">v-bind:layout-index</span>=<span class="string">&quot;index&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">v-bind:layout-count</span>=<span class="string">&quot;visibleCount&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">v-bind:background-color</span>=<span class="string">&quot;backgroundColors[viewType]&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">v-on:bg-change</span>=<span class="string">&quot;setViewBackground(view, arguments[0])&quot;</span></span></span><br><span class="line"><span class="tag">      /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">v-container</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>执行过程：</p>
+<p>它会循环执行，根据用户的选择来生成相应数目的 <strong>vtk-view</strong> 窗口</p>
+<p>其中 <strong>VtkView</strong> 这个组件来自 </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> VtkView <span class="keyword">from</span> <span class="string">&#x27;paraview-glance/src/components/core/VtkView&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="🟡VtkView模块-（核心部分）"><a href="#🟡VtkView模块-（核心部分）" class="headerlink" title="🟡VtkView模块 （核心部分）"></a>🟡VtkView模块 （核心部分）</h3><h4 id="1-html第一部分：右边工具栏"><a href="#1-html第一部分：右边工具栏" class="headerlink" title="1.html第一部分：右边工具栏"></a>1.html第一部分：右边工具栏</h4><p>template.html</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">v-layout</span> <span class="attr">column</span> <span class="attr">:class</span>=<span class="string">&quot;$style.floatToolbar&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;color: aliceblue;&quot;</span>&gt;</span>测试<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">left</span> <span class="attr">:disabled</span>=<span class="string">&quot;smallScreen&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span>&gt;</span>Reset camera<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-btn</span> <span class="attr">icon</span> <span class="attr">dark</span> <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span> <span class="attr">v-on:click</span>=<span class="string">&quot;resetCamera()&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">v-icon</span>&gt;</span>mdi-image-filter-center-focus<span class="tag">&lt;/<span class="name">v-icon</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">left</span> <span class="attr">:disabled</span>=<span class="string">&quot;smallScreen&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span>&gt;</span>Rotate camera left 90°<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-btn</span> <span class="attr">icon</span> <span class="attr">dark</span> <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span> <span class="attr">v-on:click</span>=<span class="string">&quot;rollLeft()&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">v-icon</span>&gt;</span>mdi-rotate-left<span class="tag">&lt;/<span class="name">v-icon</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">left</span> <span class="attr">:disabled</span>=<span class="string">&quot;smallScreen&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span>&gt;</span>Rotate camera right 90°<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-btn</span> <span class="attr">icon</span> <span class="attr">dark</span> <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span> <span class="attr">v-on:click</span>=<span class="string">&quot;rollRight()&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">v-icon</span>&gt;</span>mdi-rotate-right<span class="tag">&lt;/<span class="name">v-icon</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">left</span> <span class="attr">v-if</span>=<span class="string">&quot;type === &#x27;View3D&#x27;&quot;</span> <span class="attr">:disabled</span>=<span class="string">&quot;smallScreen&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span></span></span><br><span class="line"><span class="tag">      &gt;</span>Reset Camera to Orientation &#123;&#123;orientationLabels[0]&#125;&#125;&lt;/span</span><br><span class="line">    &gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-btn</span> <span class="attr">icon</span> <span class="attr">dark</span> <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span> <span class="attr">v-on:click</span>=<span class="string">&quot;updateOrientation(&#x27;x&#x27;)&quot;</span>&gt;</span></span><br><span class="line">        &#123;&#123;orientationLabels[0]&#125;&#125;</span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">left</span> <span class="attr">v-if</span>=<span class="string">&quot;type === &#x27;View3D&#x27;&quot;</span> <span class="attr">:disabled</span>=<span class="string">&quot;smallScreen&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span></span></span><br><span class="line"><span class="tag">      &gt;</span>Reset Camera to Orientation &#123;&#123;orientationLabels[1]&#125;&#125;&lt;/span</span><br><span class="line">    &gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-btn</span> <span class="attr">icon</span> <span class="attr">dark</span> <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span> <span class="attr">v-on:click</span>=<span class="string">&quot;updateOrientation(&#x27;y&#x27;)&quot;</span>&gt;</span></span><br><span class="line">        &#123;&#123;orientationLabels[1]&#125;&#125;</span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">left</span> <span class="attr">v-if</span>=<span class="string">&quot;type === &#x27;View3D&#x27;&quot;</span> <span class="attr">:disabled</span>=<span class="string">&quot;smallScreen&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span></span></span><br><span class="line"><span class="tag">      &gt;</span>Reset Camera to Orientation &#123;&#123;orientationLabels[2]&#125;&#125;&lt;/span</span><br><span class="line">    &gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-btn</span> <span class="attr">icon</span> <span class="attr">dark</span> <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span> <span class="attr">v-on:click</span>=<span class="string">&quot;updateOrientation(&#x27;z&#x27;)&quot;</span>&gt;</span></span><br><span class="line">        &#123;&#123;orientationLabels[2]&#125;&#125;</span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">v-layout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-html第二部分：底边工具栏"><a href="#2-html第二部分：底边工具栏" class="headerlink" title="2.html第二部分：底边工具栏"></a>2.html第二部分：底边工具栏</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 下侧工具栏 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">v-layout</span> <span class="attr">column</span> <span class="attr">fill-height</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">v-flex</span></span></span><br><span class="line"><span class="tag">    <span class="attr">fill-height</span></span></span><br><span class="line"><span class="tag">    <span class="attr">class</span>=<span class="string">&quot;js-view&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:class</span>=<span class="string">&quot;$style.vtkView&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:style</span>=<span class="string">&quot;&#123; background: backgroundColor &#125;&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">v-on:mousedown</span>=<span class="string">&quot;view.activate()&quot;</span></span></span><br><span class="line"><span class="tag">  /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">v-if</span>=<span class="string">&quot;isActive&quot;</span> <span class="attr">:class</span>=<span class="string">&quot;$style.activeView&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">:class</span>=<span class="string">&quot;$style.toolbarWrapper&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">toolbar-sheet</span> <span class="attr">v-model</span>=<span class="string">&quot;backgroundSheet&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-container</span> <span class="attr">grid-list-md</span> <span class="attr">class</span>=<span class="string">&quot;mr-0&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">v-layout</span> <span class="attr">row</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">v-spacer</span> /&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">palette-picker</span></span></span><br><span class="line"><span class="tag">            <span class="attr">:size</span>=<span class="string">&quot;24&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">:palette</span>=<span class="string">&quot;palette&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">:value</span>=<span class="string">&quot;backgroundColor&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on:input</span>=<span class="string">&quot;changeBackgroundColor&quot;</span></span></span><br><span class="line"><span class="tag">          /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">v-layout</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-container</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">toolbar-sheet</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">v-toolbar</span> <span class="attr">dark</span> <span class="attr">height</span>=<span class="string">&quot;45px&quot;</span> <span class="attr">:class</span>=<span class="string">&quot;$style.smallToolbar&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-select</span></span></span><br><span class="line"><span class="tag">        <span class="attr">dense</span></span></span><br><span class="line"><span class="tag">        <span class="attr">flat</span></span></span><br><span class="line"><span class="tag">        <span class="attr">hide-details</span></span></span><br><span class="line"><span class="tag">        <span class="attr">:class</span>=<span class="string">&quot;$style.viewTypeSelector&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">:items</span>=<span class="string">&quot;viewTypes&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">:value</span>=<span class="string">&quot;viewType&quot;</span></span></span><br><span class="line"><span class="tag">        @<span class="attr">change</span>=<span class="string">&quot;changeViewType&quot;</span></span></span><br><span class="line"><span class="tag">      /&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-spacer</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span>&gt;</span>测试<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-tooltip</span></span></span><br><span class="line"><span class="tag">        <span class="attr">top</span></span></span><br><span class="line"><span class="tag">        <span class="attr">v-if</span>=<span class="string">&quot;type === &#x27;View3D&#x27;&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">:disabled</span>=<span class="string">&quot;smallScreen || viewPointMenuVisible&quot;</span></span></span><br><span class="line"><span class="tag">      &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on: tooltip &#125;&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">v-menu</span> <span class="attr">offset-y</span> <span class="attr">top</span> <span class="attr">left</span> <span class="attr">v-model</span>=<span class="string">&quot;viewPointMenuVisible&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on: menu &#125;&quot;</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">v-btn</span></span></span><br><span class="line"><span class="tag">                <span class="attr">:class</span>=<span class="string">&quot;$style.button&quot;</span></span></span><br><span class="line"><span class="tag">                <span class="attr">icon</span></span></span><br><span class="line"><span class="tag">                <span class="attr">v-on</span>=<span class="string">&quot;&#123; ...tooltip, ...menu &#125;&quot;</span></span></span><br><span class="line"><span class="tag">                <span class="attr">v-show</span>=<span class="string">&quot;cameraViewPoints.length&quot;</span></span></span><br><span class="line"><span class="tag">                <span class="attr">:disabled</span>=<span class="string">&quot;viewPointMenuVisible&quot;</span></span></span><br><span class="line"><span class="tag">              &gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">v-icon</span>&gt;</span>mdi-camera-switch<span class="tag">&lt;/<span class="name">v-icon</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">v-list</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">v-list-item</span></span></span><br><span class="line"><span class="tag">                <span class="attr">v-for</span>=<span class="string">&quot;(item, index) in cameraViewPoints&quot;</span></span></span><br><span class="line"><span class="tag">                <span class="attr">:key</span>=<span class="string">&quot;index&quot;</span></span></span><br><span class="line"><span class="tag">                @<span class="attr">click</span>=<span class="string">&quot;changeCameraViewPoint(item)&quot;</span></span></span><br><span class="line"><span class="tag">              &gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">v-list-item-title</span>&gt;</span>&#123;&#123; item &#125;&#125;<span class="tag">&lt;/<span class="name">v-list-item-title</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;/<span class="name">v-list-item</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">v-list</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">v-menu</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span>&gt;</span>Change View Point<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">top</span> <span class="attr">:disabled</span>=<span class="string">&quot;smallScreen&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span>&gt;</span>Background color<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">v-btn</span></span></span><br><span class="line"><span class="tag">            <span class="attr">:class</span>=<span class="string">&quot;$style.button&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">icon</span></span></span><br><span class="line"><span class="tag">            <span class="attr">:disabled</span>=<span class="string">&quot;backgroundSheet || !view&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on:click</span>=<span class="string">&quot;backgroundSheet = !backgroundSheet&quot;</span></span></span><br><span class="line"><span class="tag">          &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">v-icon</span>&gt;</span>mdi-palette<span class="tag">&lt;/<span class="name">v-icon</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">top</span> <span class="attr">:disabled</span>=<span class="string">&quot;smallScreen&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span>&gt;</span>Screenshot<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">v-btn</span></span></span><br><span class="line"><span class="tag">            <span class="attr">:class</span>=<span class="string">&quot;$style.button&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">icon</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on:click</span>=<span class="string">&quot;screenCapture()&quot;</span></span></span><br><span class="line"><span class="tag">          &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">v-icon</span>&gt;</span>mdi-camera-plus<span class="tag">&lt;/<span class="name">v-icon</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">top</span> <span class="attr">v-if</span>=<span class="string">&quot;!smallScreen &amp;&amp; singleViewButton&quot;</span> <span class="attr">key</span>=<span class="string">&quot;singleView&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span>&gt;</span>Single view<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">v-btn</span></span></span><br><span class="line"><span class="tag">            <span class="attr">:class</span>=<span class="string">&quot;$style.button&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">icon</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on:click</span>=<span class="string">&quot;singleView(layoutIndex)&quot;</span></span></span><br><span class="line"><span class="tag">          &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">v-icon</span>&gt;</span>mdi-fullscreen<span class="tag">&lt;/<span class="name">v-icon</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">top</span> <span class="attr">v-if</span>=<span class="string">&quot;!smallScreen &amp;&amp; flipViewButton&quot;</span> <span class="attr">key</span>=<span class="string">&quot;flipView&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span>&gt;</span>Split view<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">v-btn</span></span></span><br><span class="line"><span class="tag">            <span class="attr">:class</span>=<span class="string">&quot;$style.button&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">icon</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on:click</span>=<span class="string">&quot;splitView(layoutIndex)&quot;</span></span></span><br><span class="line"><span class="tag">          &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">v-icon</span>&gt;</span>mdi-flip-horizontal<span class="tag">&lt;/<span class="name">v-icon</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">v-tooltip</span> <span class="attr">top</span> <span class="attr">v-if</span>=<span class="string">&quot;!smallScreen &amp;&amp; quadViewButton&quot;</span> <span class="attr">key</span>=<span class="string">&quot;quadView&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;pv-no-select&quot;</span>&gt;</span>Quad view<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">template</span> <span class="attr">v-slot:activator</span>=<span class="string">&quot;&#123; on &#125;&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">v-btn</span></span></span><br><span class="line"><span class="tag">            <span class="attr">:class</span>=<span class="string">&quot;$style.button&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">icon</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on</span>=<span class="string">&quot;on&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">v-on:click</span>=<span class="string">&quot;quadView(layoutIndex)&quot;</span></span></span><br><span class="line"><span class="tag">          &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">v-icon</span>&gt;</span>mdi-widgets<span class="tag">&lt;/<span class="name">v-icon</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">v-btn</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">v-tooltip</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">v-toolbar</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">v-layout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="修改部分代码的测试结果"><a href="#修改部分代码的测试结果" class="headerlink" title="修改部分代码的测试结果"></a>修改部分代码的测试结果</h4><p><img src="/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/4.png" alt="4"></p>
+<p>显示的结果基本符合预期，但是我们关注的主要不是UI层面的东西，我们想要了解这个图像是如何进行渲染的</p>
+<p>尝试将UI全部都注释掉，只留下渲染的部分，发现核心的代码如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">v-flex</span></span></span><br><span class="line"><span class="tag">  <span class="attr">fill-height</span></span></span><br><span class="line"><span class="tag">  <span class="attr">class</span>=<span class="string">&quot;js-view&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:class</span>=<span class="string">&quot;$style.vtkView&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:style</span>=<span class="string">&quot;&#123; background: backgroundColor &#125;&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">v-on:mousedown</span>=<span class="string">&quot;view.activate()&quot;</span></span></span><br><span class="line"><span class="tag">/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里只是设置了一个class 为 js-view的元素，它其实只提供一个底座的作用，用来产生一个DOM元素提供给VTK库进行渲染。</p>
+<h4 id="渲染vtk-view"><a href="#渲染vtk-view" class="headerlink" title="渲染vtk view"></a>渲染vtk view</h4><p>/script.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">tryMountView</span>(<span class="params">view</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">this</span>.internalViewId &gt; -<span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> oldView = <span class="built_in">this</span>.$proxyManager.getProxyById(<span class="built_in">this</span>.internalViewId);</span><br><span class="line">    <span class="built_in">this</span>.unmountView(oldView);</span><br><span class="line">    <span class="built_in">this</span>.internalViewId = -<span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (view) &#123;</span><br><span class="line">    <span class="built_in">this</span>.internalViewId = view.getProxyId();</span><br><span class="line">    view.setContainer(<span class="built_in">this</span>.$el.querySelector(<span class="string">&#x27;.js-view&#x27;</span>));</span><br><span class="line">    <span class="keyword">const</span> widgetManager = view.getReferenceByName(<span class="string">&#x27;widgetManager&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (widgetManager) &#123;</span><br><span class="line">      widgetManager.setUseSvgLayer(<span class="literal">true</span>);</span><br><span class="line">      <span class="comment">// workaround to disable picking if previously disabled</span></span><br><span class="line">      <span class="keyword">if</span> (!widgetManager.getPickingEnabled()) &#123;</span><br><span class="line">        widgetManager.disablePicking();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<p>这里 view setContainer 就是选择了上文中的DOM元素，作为一个底座</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag"># 医学影像处理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021-06-23-%E4%B8%80%E6%AC%A1%E7%89%B9%E6%AE%8A%E7%9A%84%E6%97%85%E8%A1%8C%EF%BC%9A%E9%87%8D%E5%9B%9E%E6%AD%A6%E6%B1%89%E7%90%86%E5%B7%A5/" rel="prev" title="一次特殊的旅行：重回武汉理工">
+      <i class="fa fa-chevron-left"></i> 一次特殊的旅行：重回武汉理工
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%B7%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">🔷简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%B5%E5%BC%80%E5%90%AFdev%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">🔵开启dev服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%9D%8C%E7%AA%97%E5%8F%A3%E5%87%BA%E7%8E%B0%E9%94%99%E4%BD%8D%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">❌窗口出现错位的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9F%A6%E6%A1%86%E6%9E%B6%E7%AE%80%E4%BB%8B"><span class="nav-number">3.</span> <span class="nav-text">🟦框架简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E4%BB%8E%E4%BE%9D%E8%B5%96%E5%BC%80%E5%A7%8B%E7%9C%8B%E8%B5%B7%EF%BC%88%E9%83%A8%E5%88%86%E6%9C%BA%E7%BF%BB%EF%BC%89%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">先从依赖开始看起（部分机翻）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E4%BD%93%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">3.2.</span> <span class="nav-text">总体文件结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9F%A6%E6%A8%A1%E5%9D%97%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">🟦模块分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%9F%A2%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="nav-number">4.1.</span> <span class="nav-text">🟢代码执行过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%9F%A1app-%E5%92%8C-landing-%E9%A1%B5%E9%9D%A2%E7%9A%84%E5%88%87%E6%8D%A2"><span class="nav-number">4.2.</span> <span class="nav-text">🟡app 和 landing 页面的切换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%9F%A1landing-%E6%A8%A1%E5%9D%97%E5%88%86%E6%9E%90"><span class="nav-number">4.3.</span> <span class="nav-text">🟡landing 模块分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%9F%A1LayoutView%E6%A8%A1%E5%9D%97"><span class="nav-number">4.4.</span> <span class="nav-text">🟡LayoutView模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%9F%A1VtkView%E6%A8%A1%E5%9D%97-%EF%BC%88%E6%A0%B8%E5%BF%83%E9%83%A8%E5%88%86%EF%BC%89"><span class="nav-number">4.5.</span> <span class="nav-text">🟡VtkView模块 （核心部分）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-html%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E5%8F%B3%E8%BE%B9%E5%B7%A5%E5%85%B7%E6%A0%8F"><span class="nav-number">4.5.1.</span> <span class="nav-text">1.html第一部分：右边工具栏</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-html%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E5%BA%95%E8%BE%B9%E5%B7%A5%E5%85%B7%E6%A0%8F"><span class="nav-number">4.5.2.</span> <span class="nav-text">2.html第二部分：底边工具栏</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%83%A8%E5%88%86%E4%BB%A3%E7%A0%81%E7%9A%84%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-number">4.5.3.</span> <span class="nav-text">修改部分代码的测试结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B8%B2%E6%9F%93vtk-view"><span class="nav-number">4.5.4.</span> <span class="nav-text">渲染vtk view</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="alexiusll"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">alexiusll</p>
+  <div class="site-description" itemprop="description">alexiusll 的博客</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alexiusll" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;alexiusll" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/32825146" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;32825146" rel="noopener" target="_blank"><i class="fas fa-bold fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alexiusll</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">32k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'taK3ClN74qMXMOLjbwinsFWY-gzGzoHsz',
+      appKey     : '0TM4FFbzI0dKrjeorfF42vvx',
+      placeholder: "留下你的评论吧!",
+      avatar     : 'wavatar',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
