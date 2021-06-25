@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+<meta name="baidu-site-verification" content="code-ipFSuNxhZV" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"alexiusll.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="🔵前言如果想要做web端的医学影像处理，如果不想从纯底层，例如webgl或者threejs开始做起，用好vtk.js就是必不可少的。这也是一个kitware组织开发的js库。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vtk.js结合React使用基础">
+<meta property="og:url" content="https://alexiusll.github.io/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="alexiusll 的博客">
+<meta property="og:description" content="🔵前言如果想要做web端的医学影像处理，如果不想从纯底层，例如webgl或者threejs开始做起，用好vtk.js就是必不可少的。这也是一个kitware组织开发的js库。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alexiusll.github.io/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/5.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/6.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/7.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/8.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/9.png">
+<meta property="article:published_time" content="2021-06-25T05:06:43.000Z">
+<meta property="article:modified_time" content="2021-06-25T08:44:32.945Z">
+<meta property="article:author" content="alexiusll">
+<meta property="article:tag" content="医学影像处理">
+<meta property="article:tag" content="前端">
+<meta property="article:tag" content="vtk.js">
+<meta property="article:tag" content="React">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://alexiusll.github.io/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/5.png">
+
+<link rel="canonical" href="https://alexiusll.github.io/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>vtk.js结合React使用基础 | alexiusll 的博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?80dbe2fa10c94d76691cf667b9e57694";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">alexiusll 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">7</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://alexiusll.github.io/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="alexiusll">
+      <meta itemprop="description" content="alexiusll 的博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alexiusll 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          vtk.js结合React使用基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-25 13:06:43" itemprop="dateCreated datePublished" datetime="2021-06-25T13:06:43+08:00">2021-06-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">医学影像处理</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/" class="post-meta-item leancloud_visitors" data-flag-title="vtk.js结合React使用基础" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="🔵前言"><a href="#🔵前言" class="headerlink" title="🔵前言"></a>🔵前言</h3><p>如果想要做web端的医学影像处理，如果不想从纯底层，例如webgl或者threejs开始做起，用好vtk.js就是必不可少的。这也是一个kitware组织开发的js库。</p>
+<span id="more"></span>
+
+<p>vtk.js的文档地址：</p>
+<p><a target="_blank" rel="noopener" href="https://kitware.github.io/vtk-js/">https://kitware.github.io/vtk-js/</a></p>
+<p>机翻预警：</p>
+<p>VTK.js是一个JavaScript库，可用于在浏览器中进行科学可视化。这个库可以通过NPM和(NPM ESM)或unpkg.com CDN来使用，所以它可以直接作为一个脚本标签导入到你的网页中。</p>
+<p>本文会简单介绍如何在React代码中使用vtk.js渲染基础的图形。</p>
+<h3 id="📘准备环境"><a href="#📘准备环境" class="headerlink" title="📘准备环境"></a>📘准备环境</h3><p>这里前端使用了umi3 的全套框架，我们先使用yarn指令获取最新的vtk.js</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> yarn add @kitware/vtk.js</span></span><br></pre></td></tr></table></figure>
+
+<p>如果想在代码中使用vtk.js的代码，还需要修改webpack的配置。在umi中修改webpack的配置的方法是，使用chainWebpack，具体可以参考umi的文档，这里不多做赘述。</p>
+<p>我们打开node_modules下vtk.js的包，发现它的目录下有一个chainWebpack的配置，可以直接粘贴过来。</p>
+<p>这个文件的路径在 /node_modules/@kitware/vtk.js/Utilities/config/chainWebpack.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> (config: any) =&gt; &#123;</span><br><span class="line">  config.module</span><br><span class="line">    .rule(<span class="string">&#x27;vtk-glsl&#x27;</span>)</span><br><span class="line">    .test(<span class="regexp">/\.glsl$/i</span>)</span><br><span class="line">    .include.add(<span class="regexp">/vtk\.js[/\\]Sources/</span>)</span><br><span class="line">    .end()</span><br><span class="line">    .use(<span class="string">&#x27;shader-loader&#x27;</span>)</span><br><span class="line">    .loader(<span class="string">&#x27;shader-loader&#x27;</span>)</span><br><span class="line">    .end();</span><br><span class="line"></span><br><span class="line">  config.module</span><br><span class="line">    .rule(<span class="string">&#x27;vtk-js&#x27;</span>)</span><br><span class="line">    .test(<span class="regexp">/\.js$/i</span>)</span><br><span class="line">    .include.add(<span class="regexp">/vtk\.js[/\\]Sources/</span>)</span><br><span class="line">    .end()</span><br><span class="line">    .use(<span class="string">&#x27;babel-loader&#x27;</span>)</span><br><span class="line">    .loader(<span class="string">&#x27;babel-loader&#x27;</span>)</span><br><span class="line">    .end();</span><br><span class="line"></span><br><span class="line">  config.module</span><br><span class="line">    .rule(<span class="string">&#x27;vtk-worker&#x27;</span>)</span><br><span class="line">    .test(<span class="regexp">/\.worker\.js$/</span>)</span><br><span class="line">    .include.add(<span class="regexp">/vtk\.js[/\\]Sources/</span>)</span><br><span class="line">    .end()</span><br><span class="line">    .use(<span class="string">&#x27;worker-loader&#x27;</span>)</span><br><span class="line">    .loader(<span class="string">&#x27;worker-loader&#x27;</span>)</span><br><span class="line">    .options(&#123; <span class="attr">inline</span>: <span class="string">&#x27;no-fallback&#x27;</span> &#125;)</span><br><span class="line">    .end();</span><br><span class="line"></span><br><span class="line">  config.module</span><br><span class="line">    .rule(<span class="string">&#x27;vtk-css&#x27;</span>)</span><br><span class="line">    .test(<span class="regexp">/\.css$/</span>)</span><br><span class="line">    .exclude.add(<span class="regexp">/\.module\.css$/</span>)</span><br><span class="line">    .end()</span><br><span class="line">    .include.add(<span class="regexp">/vtk\.js[/\\]Sources/</span>)</span><br><span class="line">    .end()</span><br><span class="line">    .use(<span class="string">&#x27;styles&#x27;</span>)</span><br><span class="line">    .loader(<span class="string">&#x27;style-loader&#x27;</span>)</span><br><span class="line">    .loader(<span class="string">&#x27;css-loader&#x27;</span>)</span><br><span class="line">    .loader(<span class="string">&#x27;postcss-loader&#x27;</span>)</span><br><span class="line">    .end();</span><br><span class="line"></span><br><span class="line">  config.module</span><br><span class="line">    .rule(<span class="string">&#x27;vtk-svg&#x27;</span>)</span><br><span class="line">    .test(<span class="regexp">/\.svg$/</span>)</span><br><span class="line">    .include.add(<span class="regexp">/vtk\.js[/\\]Sources/</span>)</span><br><span class="line">    .end()</span><br><span class="line">    .use(<span class="string">&#x27;raw-loader&#x27;</span>)</span><br><span class="line">    .loader(<span class="string">&#x27;raw-loader&#x27;</span>)</span><br><span class="line">    .end();</span><br><span class="line"></span><br><span class="line">  config.module</span><br><span class="line">    .rule(<span class="string">&#x27;vtk-module-css&#x27;</span>)</span><br><span class="line">    .test(<span class="regexp">/\.css$/</span>)</span><br><span class="line">    .include.add(<span class="regexp">/vtk\.js[/\\]Sources/</span>)</span><br><span class="line">    .add(<span class="regexp">/\.module\.css$/</span>)</span><br><span class="line">    .end()</span><br><span class="line">    .use(<span class="string">&#x27;styles&#x27;</span>)</span><br><span class="line">    .loader(<span class="string">&#x27;style-loader&#x27;</span>)</span><br><span class="line">    .loader(<span class="string">&#x27;css-loader&#x27;</span>)</span><br><span class="line">    .options(&#123;</span><br><span class="line">      <span class="attr">modules</span>: &#123;</span><br><span class="line">        <span class="attr">localIdentName</span>: <span class="string">&#x27;[name]-[local]_[sha512:hash:base64:5]&#x27;</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;)</span><br><span class="line">    .loader(<span class="string">&#x27;postcss-loader&#x27;</span>)</span><br><span class="line">    .end();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>除了 shader-loader 是vtk.js自己就有的loader之外，我们可能还需要自行安装一些loader ， 例如 babel-loader，注意部分loader的版本不要太新，否则可能可能会出现问题。</p>
+<p>这里给出我目前的package配置：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;devDependencies&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;@umijs/fabric&quot;</span>: <span class="string">&quot;^2.5.7&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;@umijs/plugin-esbuild&quot;</span>: <span class="string">&quot;^1.1.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;@umijs/preset-react&quot;</span>: <span class="string">&quot;^1.8.10&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;babel-loader&quot;</span>: <span class="string">&quot;^8.2.2&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;commitizen&quot;</span>: <span class="string">&quot;^4.2.4&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;copy-webpack-plugin&quot;</span>: <span class="string">&quot;6&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;cross-env&quot;</span>: <span class="string">&quot;^7.0.3&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;css-loader&quot;</span>: <span class="string">&quot;5.2.1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;cz-conventional-changelog&quot;</span>: <span class="string">&quot;^3.3.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;eslint&quot;</span>: <span class="string">&quot;^7.22.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;lint-staged&quot;</span>: <span class="string">&quot;^10.5.4&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;postcss-loader&quot;</span>: <span class="string">&quot;3.0.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;prettier&quot;</span>: <span class="string">&quot;^2.2.1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;raw-loader&quot;</span>: <span class="string">&quot;4.0.2&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;react-dev-inspector&quot;</span>: <span class="string">&quot;^1.5.1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;standard-version&quot;</span>: <span class="string">&quot;^9.3.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;style-loader&quot;</span>: <span class="string">&quot;2.0.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;webpack&quot;</span>: <span class="string">&quot;5.31.2&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;webpack-cli&quot;</span>: <span class="string">&quot;4.6.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;webpack-dev-server&quot;</span>: <span class="string">&quot;3.11.2&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;webpack-merge&quot;</span>: <span class="string">&quot;5.7.3&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;worker-loader&quot;</span>: <span class="string">&quot;3.0.8&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;yorkie&quot;</span>: <span class="string">&quot;^2.0.0&quot;</span></span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="📗现在可以写代码了"><a href="#📗现在可以写代码了" class="headerlink" title="📗现在可以写代码了"></a>📗现在可以写代码了</h3><p>我们尝试实现一个最简单的 vtk.js的 demo</p>
+<p>这里参考一下官方文档里面的例子，我第一次看vtk.js的文档还没有和react结合的例子，现在居然更了…</p>
+<p><a target="_blank" rel="noopener" href="https://kitware.github.io/vtk-js/docs/vtk_react.html">https://kitware.github.io/vtk-js/docs/vtk_react.html</a></p>
+<p>我修改了部分代码，以适应现有的框架，例如UI的样式。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState, useRef, useEffect, FC &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;@kitware/vtk.js/Rendering/Profiles/Geometry&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> vtkFullScreenRenderWindow <span class="keyword">from</span> <span class="string">&#x27;@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> vtkActor <span class="keyword">from</span> <span class="string">&#x27;@kitware/vtk.js/Rendering/Core/Actor&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> vtkMapper <span class="keyword">from</span> <span class="string">&#x27;@kitware/vtk.js/Rendering/Core/Mapper&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> vtkConeSource <span class="keyword">from</span> <span class="string">&#x27;@kitware/vtk.js/Filters/Sources/ConeSource&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Demo: React.FC&lt;&#123;&#125;&gt; = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> vtkContainerRef = useRef(<span class="literal">null</span>);</span><br><span class="line">  <span class="keyword">const</span> context = useRef&lt;<span class="built_in">any</span> | <span class="literal">null</span>&gt;(<span class="literal">null</span>);</span><br><span class="line">  <span class="keyword">const</span> [coneResolution, setConeResolution] = useState(<span class="number">6</span>);</span><br><span class="line">  <span class="keyword">const</span> [representation, setRepresentation] = useState(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!context.current) &#123;</span><br><span class="line">      <span class="keyword">const</span> fullScreenRenderer = vtkFullScreenRenderWindow.newInstance(&#123;</span><br><span class="line">        <span class="attr">rootContainer</span>: vtkContainerRef.current,</span><br><span class="line">        <span class="attr">containerStyle</span>: &#123;</span><br><span class="line">          <span class="attr">height</span>: <span class="string">&#x27;640px&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">      &#125;);</span><br><span class="line">      <span class="keyword">const</span> coneSource = vtkConeSource.newInstance(&#123; <span class="attr">height</span>: <span class="number">1.0</span> &#125;);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">const</span> mapper = vtkMapper.newInstance();</span><br><span class="line">      mapper.setInputConnection(coneSource.getOutputPort());</span><br><span class="line"></span><br><span class="line">      <span class="keyword">const</span> actor = vtkActor.newInstance();</span><br><span class="line">      actor.setMapper(mapper);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">const</span> renderer = fullScreenRenderer.getRenderer();</span><br><span class="line">      <span class="keyword">const</span> renderWindow = fullScreenRenderer.getRenderWindow();</span><br><span class="line"></span><br><span class="line">      renderer.addActor(actor);</span><br><span class="line">      renderer.resetCamera();</span><br><span class="line">      renderWindow.render();</span><br><span class="line"></span><br><span class="line">      fullScreenRenderer.setResizeCallback(<span class="function">(<span class="params">&#123; width, height &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">&#x27;resize&#x27;</span>);</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      context.current = &#123;</span><br><span class="line">        fullScreenRenderer,</span><br><span class="line">        renderWindow,</span><br><span class="line">        renderer,</span><br><span class="line">        coneSource,</span><br><span class="line">        actor,</span><br><span class="line">        mapper,</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (context.current) &#123;</span><br><span class="line">        <span class="keyword">const</span> &#123; fullScreenRenderer, coneSource, actor, mapper &#125; = context.current;</span><br><span class="line">        actor.delete();</span><br><span class="line">        mapper.delete();</span><br><span class="line">        coneSource.delete();</span><br><span class="line">        fullScreenRenderer.delete();</span><br><span class="line">        context.current = <span class="literal">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;, [vtkContainerRef]);</span><br><span class="line"></span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (context.current) &#123;</span><br><span class="line">      <span class="keyword">const</span> &#123; coneSource, renderWindow &#125; = context.current;</span><br><span class="line">      coneSource.setResolution(coneResolution);</span><br><span class="line">      renderWindow.render();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, [coneResolution]);</span><br><span class="line"></span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (context.current) &#123;</span><br><span class="line">      <span class="keyword">const</span> &#123; actor, renderWindow &#125; = context.current;</span><br><span class="line">      actor.getProperty().setRepresentation(representation);</span><br><span class="line">      renderWindow.render();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, [representation]);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">table</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">        <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">          <span class="attr">position:</span> &#x27;<span class="attr">absolute</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">          <span class="attr">margin:</span> &#x27;<span class="attr">30px</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">          <span class="attr">background:</span> &#x27;<span class="attr">white</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">          <span class="attr">padding:</span> &#x27;<span class="attr">12px</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">        &#125;&#125;</span></span></span><br><span class="line"><span class="tag"><span class="xml">      &gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">tbody</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="xml">              <span class="tag">&lt;<span class="name">select</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">                <span class="attr">value</span>=<span class="string">&#123;representation&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">                <span class="attr">style</span>=<span class="string">&#123;&#123;</span> <span class="attr">width:</span> &#x27;<span class="attr">100</span>%&#x27; &#125;&#125;</span></span></span><br><span class="line"><span class="tag"><span class="xml">                <span class="attr">onInput</span>=<span class="string">&#123;(ev)</span> =&gt;</span> setRepresentation(Number(ev.target.value))&#125;</span></span><br><span class="line"><span class="xml">              &gt;</span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">&quot;0&quot;</span>&gt;</span>Points<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">&quot;1&quot;</span>&gt;</span>Wireframe<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">&quot;2&quot;</span>&gt;</span>Surface<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span></span><br><span class="line"><span class="xml">              <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;/<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="xml">              <span class="tag">&lt;<span class="name">input</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">                <span class="attr">type</span>=<span class="string">&quot;range&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">                <span class="attr">min</span>=<span class="string">&quot;4&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">                <span class="attr">max</span>=<span class="string">&quot;80&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">                <span class="attr">value</span>=<span class="string">&#123;coneResolution&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">                <span class="attr">onChange</span>=<span class="string">&#123;(ev)</span> =&gt;</span> setConeResolution(Number(ev.target.value))&#125;</span></span><br><span class="line"><span class="xml">              /&gt;</span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;/<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;/<span class="name">table</span>&gt;</span></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">&#123;vtkContainerRef&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> Demo;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="📃渲染结果"><a href="#📃渲染结果" class="headerlink" title="📃渲染结果"></a>📃渲染结果</h4><p><img src="/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/5.png" alt="5"></p>
+<h4 id="📓代码解析"><a href="#📓代码解析" class="headerlink" title="📓代码解析"></a>📓代码解析</h4><h5 id="🔵React部分"><a href="#🔵React部分" class="headerlink" title="🔵React部分"></a>🔵React部分</h5><p><strong>获取网页Dom元素</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> vtkContainerRef = useRef(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">&lt;div ref=&#123;vtkContainerRef&#125; /&gt;</span><br></pre></td></tr></table></figure>
+
+<p>useRef 返回一个可变的 ref 对象，其 .current 属性被初始化为传入的参数（initialValue）。</p>
+<p>返回的  **ref 对象 ** 在组件的 <strong>整个生命周期内保持不变。</strong></p>
+<p>本质上，useRef 就像是可以在其 .current 属性中保存一个可变值的“盒子”。</p>
+<p>请记住，当 ref 对象内容发生变化时，useRef 并不会通知你。<strong>变更 .current 属性不会引发组件重新渲染</strong>。</p>
+<p><strong>保存上下文的属性，这一部分值的改变不会触发重新渲染</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> context = useRef&lt;any | <span class="literal">null</span>&gt;(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">context.current = &#123;</span><br><span class="line">        fullScreenRenderer,</span><br><span class="line">        renderWindow,</span><br><span class="line">        renderer,</span><br><span class="line">        coneSource,</span><br><span class="line">        actor,</span><br><span class="line">        mapper,</span><br><span class="line">      &#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>保存coneResolution和representation，这一部分值的改变会触发重新渲染！</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> [coneResolution, setConeResolution] = useState(<span class="number">6</span>);</span><br><span class="line"><span class="keyword">const</span> [representation, setRepresentation] = useState(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (context.current) &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; coneSource, renderWindow &#125; = context.current;</span><br><span class="line">    coneSource.setResolution(coneResolution);</span><br><span class="line">    renderWindow.render();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, [coneResolution]);</span><br><span class="line"></span><br><span class="line">useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (context.current) &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; actor, renderWindow &#125; = context.current;</span><br><span class="line">    actor.getProperty().setRepresentation(representation);</span><br><span class="line">    renderWindow.render();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, [representation]);</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="🔵vtk的渲染过程"><a href="#🔵vtk的渲染过程" class="headerlink" title="🔵vtk的渲染过程"></a>🔵vtk的渲染过程</h5><p><strong>步骤一，设置渲染窗口和渲染器</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fullScreenRenderer = vtkFullScreenRenderWindow.newInstance(&#123;</span><br><span class="line">        <span class="attr">rootContainer</span>: vtkContainerRef.current,</span><br><span class="line">        <span class="attr">containerStyle</span>: &#123;</span><br><span class="line">          <span class="attr">height</span>: <span class="string">&#x27;640px&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">&#125;);</span><br><span class="line">...</span><br><span class="line"><span class="keyword">const</span> renderer = fullScreenRenderer.getRenderer();</span><br><span class="line"><span class="keyword">const</span> renderWindow = fullScreenRenderer.getRenderWindow();</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>步骤二，设置数据源</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> coneSource = vtkConeSource.newInstance(&#123; <span class="attr">height</span>: <span class="number">1.0</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>步骤三，为cone 设置渲染流水线</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mapper = vtkMapper.newInstance();</span><br><span class="line">mapper.setInputConnection(coneSource.getOutputPort());</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> actor = vtkActor.newInstance();</span><br><span class="line">actor.setMapper(mapper);</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">renderer.addActor(actor);</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>步骤四，重置摄像头，并渲染</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">renderer.resetCamera();</span><br><span class="line">renderWindow.render();</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="🔵vtk的渲染流水线"><a href="#🔵vtk的渲染流水线" class="headerlink" title="🔵vtk的渲染流水线"></a>🔵vtk的渲染流水线</h5><p>资料来源是官方的ppt</p>
+<p><a target="_blank" rel="noopener" href="https://kitware.github.io/vtk-js/docs/tutorial.html">https://kitware.github.io/vtk-js/docs/tutorial.html</a></p>
+<p><strong>概要图</strong></p>
+<p><img src="/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/6.png"></p>
+<p><strong>流水线</strong></p>
+<ul>
+<li><p>ConeSource提供数据</p>
+</li>
+<li><p>数据通过Mapper</p>
+</li>
+<li><p>Mapper被附加到Actor</p>
+</li>
+<li><p>Renderer包含许多actor</p>
+</li>
+<li><p>RenderWindow 包含许多渲染器</p>
+</li>
+</ul>
+<p><img src="/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/7.png" alt="7"></p>
+<p><strong>ConeSource</strong></p>
+<ul>
+<li><p>vtkConeSource是一个VTK过滤器</p>
+</li>
+<li><p>输出vtkPolyData的算法</p>
+<ul>
+<li><p>顶点、线和面的集合</p>
+</li>
+<li><p>基本的vtk.js数据类型</p>
+</li>
+</ul>
+</li>
+<li><p>ConeSource算法:0输入，1输出</p>
+</li>
+</ul>
+<p><img src="/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/8.png" alt="8"></p>
+<p><strong>流水线</strong></p>
+<ul>
+<li>InputData / OutputData<ul>
+<li>静态:需要调用getOutputData() 来获取更新的数据</li>
+</ul>
+</li>
+<li>InputConnection / OutputPort<ul>
+<li>响应式:响应式:获取过滤器链的输出数据将获取给定现有参数的最新数据</li>
+</ul>
+</li>
+<li>数据可以通过多个渲染管线</li>
+</ul>
+<p><img src="/2021-06-25-vtk-js%E7%BB%93%E5%90%88React%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80/9.png" alt="9"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag"># 医学影像处理</a>
+              <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
+              <a href="/tags/vtk-js/" rel="tag"># vtk.js</a>
+              <a href="/tags/React/" rel="tag"># React</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021-06-24-Kitware-paraview-glance-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%9001/" rel="prev" title="Kitware/paraview-glance 源码解析01">
+      <i class="fa fa-chevron-left"></i> Kitware/paraview-glance 源码解析01
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%94%B5%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">🔵前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%98%E5%87%86%E5%A4%87%E7%8E%AF%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">📘准备环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%97%E7%8E%B0%E5%9C%A8%E5%8F%AF%E4%BB%A5%E5%86%99%E4%BB%A3%E7%A0%81%E4%BA%86"><span class="nav-number">3.</span> <span class="nav-text">📗现在可以写代码了</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%F0%9F%93%83%E6%B8%B2%E6%9F%93%E7%BB%93%E6%9E%9C"><span class="nav-number">3.1.</span> <span class="nav-text">📃渲染结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%F0%9F%93%93%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="nav-number">3.2.</span> <span class="nav-text">📓代码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%F0%9F%94%B5React%E9%83%A8%E5%88%86"><span class="nav-number">3.2.1.</span> <span class="nav-text">🔵React部分</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%F0%9F%94%B5vtk%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B"><span class="nav-number">3.2.2.</span> <span class="nav-text">🔵vtk的渲染过程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%F0%9F%94%B5vtk%E7%9A%84%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-number">3.2.3.</span> <span class="nav-text">🔵vtk的渲染流水线</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="alexiusll"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">alexiusll</p>
+  <div class="site-description" itemprop="description">alexiusll 的博客</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alexiusll" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;alexiusll" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/32825146" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;32825146" rel="noopener" target="_blank"><i class="fas fa-bold fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alexiusll</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">41k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">38 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'taK3ClN74qMXMOLjbwinsFWY-gzGzoHsz',
+      appKey     : '0TM4FFbzI0dKrjeorfF42vvx',
+      placeholder: "留下你的评论吧!",
+      avatar     : 'wavatar',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
