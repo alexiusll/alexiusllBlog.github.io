@@ -30,7 +30,7 @@ tags:
 
 https://segmentfault.com/a/1190000018079170
 
-*<!-- more -->*
+<!-- more -->
 
 ## 📘初始化项目
 
