@@ -32,11 +32,11 @@
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/tu.jpg">
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/rays.jpg">
 <meta property="article:published_time" content="2021-07-14T08:35:05.000Z">
-<meta property="article:modified_time" content="2021-07-15T11:17:50.524Z">
+<meta property="article:modified_time" content="2021-07-15T14:35:42.953Z">
 <meta property="article:author" content="alexiusll">
-<meta property="article:tag" content="医学影像处理">
 <meta property="article:tag" content="前端">
 <meta property="article:tag" content="React">
+<meta property="article:tag" content="医学影像处理">
 <meta property="article:tag" content="threejs">
 <meta property="article:tag" content="图形学">
 <meta name="twitter:card" content="summary">
@@ -143,12 +143,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a>
 
   </li>
   </ul>
@@ -241,14 +241,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3k</span>
+              <span>4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -265,7 +265,7 @@
 <p>多数内容翻译自文档 : <a target="_blank" rel="noopener" href="http://www.lebarba.com/">http://www.lebarba.com/</a></p>
 <span id="more"></span>
 
-<h2 id="📘什么是体绘制-Volume-Rendering"><a href="#📘什么是体绘制-Volume-Rendering" class="headerlink" title="📘什么是体绘制(Volume Rendering)?"></a>📘什么是体绘制(Volume Rendering)?</h2><p>​    与传统的渲染不同，使用三角形(triangles)来显示3D图形，体渲染使用其他方法，如**体素光线投射算法(Volume Ray Casting)**。这种基于图像的方法渲染一个3D标量场（scalar field）到一个2D图像通过沿着3D体素来投射光线（看不懂…）。我们在屏幕上看到的每一个像素是射线通过立方体并以一定的间隔从体素中获得强度样本的结果。</p>
+<h2 id="📘什么是体绘制-Volume-Rendering"><a href="#📘什么是体绘制-Volume-Rendering" class="headerlink" title="📘什么是体绘制(Volume Rendering)?"></a>📘什么是体绘制(Volume Rendering)?</h2><p>​    与传统的渲染不同，使用三角形(triangles)来显示3D图形，体渲染使用其他方法，如 <strong>体素光线投射算法(Volume Ray Casting)</strong> 。这种基于图像的方法渲染一个3D标量场（scalar field）到一个2D图像通过沿着3D体素来投射光线（看不懂…）。我们在屏幕上看到的每一个像素是射线通过立方体并以一定的间隔从体素中获得强度样本的结果。</p>
 <p>​    但是我们如何投射射线呢?</p>
 <p>​    一个简单的方法是使用大小为(1,1,1)3D网格立方体，并且渲染正面和背面(启用和禁用背面剔除)在两个不同的渲染通道。</p>
 <p>​    对于屏幕中生成的每一个立方体片段，我们可以创建一个射线，从立方体的正面开始，在背面结束。有了光线的起始点和结束点，我们就可以开始以固定的间隔对体素进行采样，以生成生成的片段颜色。</p>
@@ -279,7 +279,7 @@
 <h3 id="②第二步-第一个渲染通道"><a href="#②第二步-第一个渲染通道" class="headerlink" title="②第二步:第一个渲染通道"></a>②第二步:第一个渲染通道</h3><p>​    在第二步，我们打算生成很多片段，作为射线的终点。所以对于第一个渲染通道，不绘制背面的颜色，我们将片段的World-Space位置存储在渲染纹理中，作为RGB片段颜色中的x、y、z坐标值(这里RGB被编码为浮点值)。</p>
 <p>​    注意worldSpaceCoords是如何用于存储立方体背面位置的世界空间位置的。</p>
 <p><strong>前端代码（部分）</strong></p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> materialFirstPass = <span class="keyword">new</span> THREE.ShaderMaterial(&#123;</span><br><span class="line">    <span class="attr">vertexShader</span>: vertexShaderFirstPass,</span><br><span class="line">    <span class="attr">fragmentShader</span>: fragmentShaderFirstPass,</span><br><span class="line">    <span class="comment">// 定义将要渲染哪一面 - 正面，背面或两者</span></span><br><span class="line">    <span class="comment">// BackSide，FrontSide，DoubleSide</span></span><br><span class="line">    <span class="attr">side</span>: THREE.FrontSide,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> boxGeometry = <span class="keyword">new</span> THREE.BoxGeometry(<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>);</span><br><span class="line"><span class="keyword">const</span> meshFirstPass = <span class="keyword">new</span> THREE.Mesh(boxGeometry, materialFirstPass);</span><br><span class="line">scene.add(meshFirstPass);</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> materialFirstPass = <span class="keyword">new</span> THREE.ShaderMaterial(&#123;</span><br><span class="line">    <span class="attr">vertexShader</span>: vertexShaderFirstPass,</span><br><span class="line">    <span class="attr">fragmentShader</span>: fragmentShaderFirstPass,</span><br><span class="line">    <span class="comment">// 定义将要渲染哪一面 - 正面，背面或两者</span></span><br><span class="line">    <span class="comment">// BackSide，FrontSide，DoubleSide</span></span><br><span class="line">    <span class="attr">side</span>: THREE.BackSide,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> boxGeometry = <span class="keyword">new</span> THREE.BoxGeometry(<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>);</span><br><span class="line"><span class="keyword">const</span> meshFirstPass = <span class="keyword">new</span> THREE.Mesh(boxGeometry, materialFirstPass);</span><br><span class="line">scene.add(meshFirstPass);</span><br></pre></td></tr></table></figure>
 
 
 
@@ -301,6 +301,23 @@
 <p><strong>渲染结果</strong></p>
 <p><img src="/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/tu.jpg" alt="tu"></p>
 <p>​                                                                            左边是 back side  右边是 back side</p>
+<p><strong>这一步需要使用 WebGLRenderTarget 建立一个缓冲</strong></p>
+<p>文档：<a target="_blank" rel="noopener" href="https://threejs.org/docs/index.html?q=WebGLRenderTarget#api/zh/renderers/WebGLRenderTarget">https://threejs.org/docs/index.html?q=WebGLRenderTarget#api/zh/renderers/WebGLRenderTarget</a></p>
+<p>render target是一个缓冲，就是在这个缓冲中，视频卡为正在后台渲染的场景绘制像素。 它用于不同的效果，例如用于在一个图像显示在屏幕上之前先做一些处理。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用NearestFilter来消除插值.  在 cube 阶段, 生成世界坐标插值</span></span><br><span class="line"><span class="comment">// 将在片段着色器中产生虚假的射线方向，从而产生外来的颜色。</span></span><br><span class="line"><span class="keyword">const</span> rtTexture = <span class="keyword">new</span> THREE.WebGLRenderTarget(width, height, &#123;</span><br><span class="line">    <span class="attr">minFilter</span>: THREE.NearestFilter,</span><br><span class="line">    <span class="attr">magFilter</span>: THREE.NearestFilter,</span><br><span class="line">    <span class="attr">wrapS</span>: THREE.ClampToEdgeWrapping,</span><br><span class="line">    <span class="attr">wrapT</span>: THREE.ClampToEdgeWrapping,</span><br><span class="line">    <span class="attr">format</span>: THREE.RGBFormat,</span><br><span class="line">    <span class="attr">type</span>: THREE.FloatType,</span><br><span class="line">    <span class="attr">generateMipmaps</span>: <span class="literal">false</span>,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数详解：</strong></p>
+<p><strong>width</strong> - renderTarget的宽度<br><strong>height</strong> - renderTarget的高度</p>
+<p>🤍options - (可选)一个保存着自动生成的目标纹理的纹理参数以及表示是否使用深度缓存/模板缓存的布尔值的对象 以下是一些合法选项：</p>
+<p><strong>magFilter</strong> - 默认是LinearFilter. <strong>放大滤镜</strong><br><strong>minFilter</strong> - 默认是LinearFilter. <strong>缩小滤镜</strong></p>
+<p>这2个参数代表纹理的放大和缩小，这里使用 THREE.NearestFilter</p>
+<p><strong>wrapS</strong> - 默认是ClampToEdgeWrapping.  <strong>包裹模式</strong><br><strong>wrapT</strong> - 默认是ClampToEdgeWrapping. <strong>包裹模式</strong></p>
+<p>使用RepeatWrapping，纹理将简单地重复到无穷大。</p>
+<p>ClampToEdgeWrapping是默认值，纹理中的最后一个像素将延伸到网格的边缘。</p>
+<p>使用MirroredRepeatWrapping， 纹理将重复到无穷大，在每次重复时将进行镜像。</p>
+<p><strong>format</strong> - 默认是RGBAFormat. <strong>纹理的格式</strong></p>
+<p><strong>type</strong> - 默认是UnsignedByteType. 用于纹理的type属性，这些属性必须与正确的格式相对应。</p>
+<p><strong>generateMipmaps</strong> - 默认是<strong>false</strong>.  <strong>是否生成 Mipmaps</strong></p>
 <h3 id="③第三步-第二个渲染通道"><a href="#③第三步-第二个渲染通道" class="headerlink" title="③第三步:第二个渲染通道"></a>③第三步:第二个渲染通道</h3><p>​    这个渲染通道实际上是执行体积光线投射的，它从绘制立方体的正面开始，正面的每个点都是射线的起点。</p>
 <p>​    顶点着色器创建两个输出:<strong>投影坐标(片段的2D屏幕坐标)(projectedCoords)</strong> 和 <strong>世界空间坐标 (worldSpaceCoords)</strong> 。</p>
 <p>​    <strong>世界空间坐标</strong>将被用作射线起点，而<strong>投影坐标</strong>将被用于采样存储立方体背面位置的纹理。</p>
@@ -322,9 +339,9 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag"># 医学影像处理</a>
               <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
               <a href="/tags/React/" rel="tag"># React</a>
+              <a href="/tags/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag"># 医学影像处理</a>
               <a href="/tags/threejs/" rel="tag"># threejs</a>
               <a href="/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6/" rel="tag"># 图形学</a>
           </div>
@@ -338,7 +355,10 @@
     <a href="/2021-07-04-%E8%AE%B0%E5%BD%95%E4%BD%BF%E7%94%A8react%E5%86%99%E7%BB%84%E4%BB%B6%EF%BC%8C%E7%84%B6%E5%90%8E%E5%8F%91%E5%B8%83%E5%88%B0NPM/" rel="prev" title="记录使用react写组件，然后发布到NPM">
       <i class="fa fa-chevron-left"></i> 记录使用react写组件，然后发布到NPM
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021-07-15-three-js%E4%B8%ADglsl%E5%86%99%E6%B3%95%E6%95%B4%E7%90%8601/" rel="next" title="three.js中glsl写法整理01">
+      three.js中glsl写法整理01 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -414,14 +434,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -471,12 +491,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">84k</span>
+    <span title="站点总字数">91k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:17</span>
+    <span title="站点阅读时长">1:23</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
