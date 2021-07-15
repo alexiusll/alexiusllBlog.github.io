@@ -41,7 +41,7 @@ tags:
 
 ## 📘什么是体绘制(Volume Rendering)?
 
-​	与传统的渲染不同，使用三角形(triangles)来显示3D图形，体渲染使用其他方法，如**体素光线投射算法(Volume Ray Casting)**。这种基于图像的方法渲染一个3D标量场（scalar field）到一个2D图像通过沿着3D体素来投射光线（看不懂...）。我们在屏幕上看到的每一个像素是射线通过立方体并以一定的间隔从体素中获得强度样本的结果。
+​	与传统的渲染不同，使用三角形(triangles)来显示3D图形，体渲染使用其他方法，如 **体素光线投射算法(Volume Ray Casting)** 。这种基于图像的方法渲染一个3D标量场（scalar field）到一个2D图像通过沿着3D体素来投射光线（看不懂...）。我们在屏幕上看到的每一个像素是射线通过立方体并以一定的间隔从体素中获得强度样本的结果。
 
 ​	但是我们如何投射射线呢?
 
@@ -87,7 +87,7 @@ const materialFirstPass = new THREE.ShaderMaterial({
     fragmentShader: fragmentShaderFirstPass,
     // 定义将要渲染哪一面 - 正面，背面或两者
     // BackSide，FrontSide，DoubleSide
-    side: THREE.FrontSide,
+    side: THREE.BackSide,
 });
 const boxGeometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
 const meshFirstPass = new THREE.Mesh(boxGeometry, materialFirstPass);
@@ -143,6 +143,57 @@ attribute vec2 uv;
 ![tu](14-使用threejs实现简单的Volume-Rendering/tu.jpg)
 
 ​																			左边是 back side  右边是 back side
+
+
+
+**这一步需要使用 WebGLRenderTarget 建立一个缓冲**
+
+文档：https://threejs.org/docs/index.html?q=WebGLRenderTarget#api/zh/renderers/WebGLRenderTarget
+
+render target是一个缓冲，就是在这个缓冲中，视频卡为正在后台渲染的场景绘制像素。 它用于不同的效果，例如用于在一个图像显示在屏幕上之前先做一些处理。
+
+```javascript
+// 使用NearestFilter来消除插值.  在 cube 阶段, 生成世界坐标插值
+// 将在片段着色器中产生虚假的射线方向，从而产生外来的颜色。
+const rtTexture = new THREE.WebGLRenderTarget(width, height, {
+    minFilter: THREE.NearestFilter,
+    magFilter: THREE.NearestFilter,
+    wrapS: THREE.ClampToEdgeWrapping,
+    wrapT: THREE.ClampToEdgeWrapping,
+    format: THREE.RGBFormat,
+    type: THREE.FloatType,
+    generateMipmaps: false,
+});
+```
+
+**参数详解：**
+
+**width** - renderTarget的宽度
+**height** - renderTarget的高度
+
+🤍options - (可选)一个保存着自动生成的目标纹理的纹理参数以及表示是否使用深度缓存/模板缓存的布尔值的对象 以下是一些合法选项：
+
+**magFilter** - 默认是LinearFilter. **放大滤镜**
+**minFilter** - 默认是LinearFilter. **缩小滤镜**
+
+这2个参数代表纹理的放大和缩小，这里使用 THREE.NearestFilter
+
+**wrapS** - 默认是ClampToEdgeWrapping.  **包裹模式**
+**wrapT** - 默认是ClampToEdgeWrapping. **包裹模式**
+
+使用RepeatWrapping，纹理将简单地重复到无穷大。
+
+ClampToEdgeWrapping是默认值，纹理中的最后一个像素将延伸到网格的边缘。
+
+使用MirroredRepeatWrapping， 纹理将重复到无穷大，在每次重复时将进行镜像。
+
+**format** - 默认是RGBAFormat. **纹理的格式**
+
+**type** - 默认是UnsignedByteType. 用于纹理的type属性，这些属性必须与正确的格式相对应。
+
+**generateMipmaps** - 默认是**false**.  **是否生成 Mipmaps**
+
+
 
 ### ③第三步:第二个渲染通道
 
