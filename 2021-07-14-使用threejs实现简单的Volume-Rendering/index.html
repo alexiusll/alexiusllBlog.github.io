@@ -32,11 +32,11 @@
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/tu.jpg">
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/rays.jpg">
 <meta property="article:published_time" content="2021-07-14T08:35:05.000Z">
-<meta property="article:modified_time" content="2021-07-15T14:35:42.953Z">
+<meta property="article:modified_time" content="2021-07-16T10:52:59.901Z">
 <meta property="article:author" content="alexiusll">
+<meta property="article:tag" content="医学影像处理">
 <meta property="article:tag" content="前端">
 <meta property="article:tag" content="React">
-<meta property="article:tag" content="医学影像处理">
 <meta property="article:tag" content="threejs">
 <meta property="article:tag" content="图形学">
 <meta name="twitter:card" content="summary">
@@ -241,14 +241,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4k</span>
+              <span>6.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>6 分钟</span>
             </span>
 
         </div>
@@ -301,10 +301,10 @@
 <p><strong>渲染结果</strong></p>
 <p><img src="/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/tu.jpg" alt="tu"></p>
 <p>​                                                                            左边是 back side  右边是 back side</p>
-<p><strong>这一步需要使用 WebGLRenderTarget 建立一个缓冲</strong></p>
-<p>文档：<a target="_blank" rel="noopener" href="https://threejs.org/docs/index.html?q=WebGLRenderTarget#api/zh/renderers/WebGLRenderTarget">https://threejs.org/docs/index.html?q=WebGLRenderTarget#api/zh/renderers/WebGLRenderTarget</a></p>
-<p>render target是一个缓冲，就是在这个缓冲中，视频卡为正在后台渲染的场景绘制像素。 它用于不同的效果，例如用于在一个图像显示在屏幕上之前先做一些处理。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用NearestFilter来消除插值.  在 cube 阶段, 生成世界坐标插值</span></span><br><span class="line"><span class="comment">// 将在片段着色器中产生虚假的射线方向，从而产生外来的颜色。</span></span><br><span class="line"><span class="keyword">const</span> rtTexture = <span class="keyword">new</span> THREE.WebGLRenderTarget(width, height, &#123;</span><br><span class="line">    <span class="attr">minFilter</span>: THREE.NearestFilter,</span><br><span class="line">    <span class="attr">magFilter</span>: THREE.NearestFilter,</span><br><span class="line">    <span class="attr">wrapS</span>: THREE.ClampToEdgeWrapping,</span><br><span class="line">    <span class="attr">wrapT</span>: THREE.ClampToEdgeWrapping,</span><br><span class="line">    <span class="attr">format</span>: THREE.RGBFormat,</span><br><span class="line">    <span class="attr">type</span>: THREE.FloatType,</span><br><span class="line">    <span class="attr">generateMipmaps</span>: <span class="literal">false</span>,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="使用-WebGLRenderTarget-建立缓冲"><a href="#使用-WebGLRenderTarget-建立缓冲" class="headerlink" title="使用 WebGLRenderTarget 建立缓冲"></a>使用 WebGLRenderTarget 建立缓冲</h4><p>文档：</p>
+<p><a target="_blank" rel="noopener" href="https://threejs.org/docs/index.html?q=WebGLRenderTarget#api/zh/renderers/WebGLRenderTarget">https://threejs.org/docs/index.html?q=WebGLRenderTarget#api/zh/renderers/WebGLRenderTarget</a></p>
+<p>render target是一个缓冲，就是在这个缓冲中，显卡为正在后台渲染的场景绘制像素。 它用于不同的效果，例如用于在一个图像显示在屏幕上之前先做一些处理。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用NearestFilter来消除插值.  在 cube 阶段, 生成世界坐标插值</span></span><br><span class="line"><span class="comment">// 将在片段着色器中产生虚假的射线方向，从而产生外来的颜色。</span></span><br><span class="line"><span class="keyword">const</span> rtTexture = <span class="keyword">new</span> THREE.WebGLRenderTarget(width, height, &#123;</span><br><span class="line">    <span class="attr">minFilter</span>: THREE.NearestFilter,</span><br><span class="line">    <span class="attr">magFilter</span>: THREE.NearestFilter,</span><br><span class="line">    <span class="attr">wrapS</span>: THREE.ClampToEdgeWrapping,</span><br><span class="line">    <span class="attr">wrapT</span>: THREE.ClampToEdgeWrapping,</span><br><span class="line">    <span class="comment">// format: THREE.RGBFormat,</span></span><br><span class="line">    <span class="attr">type</span>: THREE.FloatType,</span><br><span class="line">    <span class="attr">generateMipmaps</span>: <span class="literal">false</span>,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
 <p><strong>参数详解：</strong></p>
 <p><strong>width</strong> - renderTarget的宽度<br><strong>height</strong> - renderTarget的高度</p>
@@ -315,12 +315,20 @@
 <p>使用RepeatWrapping，纹理将简单地重复到无穷大。</p>
 <p>ClampToEdgeWrapping是默认值，纹理中的最后一个像素将延伸到网格的边缘。</p>
 <p>使用MirroredRepeatWrapping， 纹理将重复到无穷大，在每次重复时将进行镜像。</p>
-<p><strong>format</strong> - 默认是RGBAFormat. <strong>纹理的格式</strong></p>
+<p><strong>format</strong> - 默认是RGBAFormat. <strong>纹理的格式</strong>  目前来看，好像必须设置成RGBA的格式，设置成别的格式会报warning？</p>
 <p><strong>type</strong> - 默认是UnsignedByteType. 用于纹理的type属性，这些属性必须与正确的格式相对应。</p>
 <p><strong>generateMipmaps</strong> - 默认是<strong>false</strong>.  <strong>是否生成 Mipmaps</strong></p>
-<h3 id="③第三步-第二个渲染通道"><a href="#③第三步-第二个渲染通道" class="headerlink" title="③第三步:第二个渲染通道"></a>③第三步:第二个渲染通道</h3><p>​    这个渲染通道实际上是执行体积光线投射的，它从绘制立方体的正面开始，正面的每个点都是射线的起点。</p>
-<p>​    顶点着色器创建两个输出:<strong>投影坐标(片段的2D屏幕坐标)(projectedCoords)</strong> 和 <strong>世界空间坐标 (worldSpaceCoords)</strong> 。</p>
-<p>​    <strong>世界空间坐标</strong>将被用作射线起点，而<strong>投影坐标</strong>将被用于采样存储立方体背面位置的纹理。</p>
+<h4 id="进行渲染"><a href="#进行渲染" class="headerlink" title="进行渲染"></a>进行渲染</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Render first pass and store the world space coords of the back face fragments into the texture.</span></span><br><span class="line">renderer.setRenderTarget(rtTexture);</span><br><span class="line">renderer.render(sceneFirstPass, camera);</span><br><span class="line">renderer.setRenderTarget(<span class="literal">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用函数：</strong></p>
+<p>**.setRenderTarget **</p>
+<p><strong>( renderTarget : WebGLRenderTarget, activeCubeFace : Integer, activeMipmapLevel : Integer ) : null</strong></p>
+<p>renderTarget – 需要被激活的renderTarget(可选)。若此参数为空，则将canvas设置成活跃render target。<br>activeCubeFace – Specifies the active cube side (PX 0, NX 1, PY 2, NY 3, PZ 4, NZ 5) of WebGLCubeRenderTarget (optional).<br>activeMipmapLevel – Specifies the active mipmap level (optional).</p>
+<p>该方法设置活跃rendertarget。</p>
+<h3 id="③第三步-第二个渲染通道"><a href="#③第三步-第二个渲染通道" class="headerlink" title="③第三步:第二个渲染通道"></a>③第三步:第二个渲染通道</h3><p>这个渲染通道实际上是执行体积光线投射的，它从绘制立方体的正面开始，正面的每个点都是射线的起点。</p>
+<p>顶点着色器创建两个输出:<strong>投影坐标(片段的2D屏幕坐标)(projectedCoords)</strong> 和 <strong>世界空间坐标 (worldSpaceCoords)</strong> 。</p>
+<p><strong>世界空间坐标</strong>将被用作射线起点，而<strong>投影坐标</strong>将被用于采样存储立方体背面位置的纹理。</p>
+<p><strong>vertexShaderSecondPass.vert</strong></p>
 <figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">varying</span> <span class="type">vec3</span> worldSpaceCoords;</span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec4</span> projectedCoords;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main()</span><br><span class="line">&#123;</span><br><span class="line">    worldSpaceCoords = (modelMatrix * <span class="type">vec4</span>(position + <span class="type">vec3</span>(<span class="number">0.5</span>, <span class="number">0.5</span>,<span class="number">0.5</span>), <span class="number">1.0</span> )).xyz;</span><br><span class="line">    <span class="built_in">gl_Position</span> = projectionMatrix *  modelViewMatrix * <span class="type">vec4</span>( position, <span class="number">1.0</span> );</span><br><span class="line">    projectedCoords =  projectionMatrix * modelViewMatrix * <span class="type">vec4</span>( position, <span class="number">1.0</span> );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><strong>注解</strong></p>
@@ -329,7 +337,29 @@
 <p>这个片段着色器的第二个渲染通道有点复杂，所以我们要慢慢分析这个部分。</p>
 <p><img src="/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/rays.jpg" alt="rays"></p>
 <p>​    在这个例子中，射线 R0 到 R4 是从立方体正面的片段位置投射的 （f0 到 f4 ) ，结束在立方体背面的位置(I0到I4)</p>
+<h4 id="得到射线的向量"><a href="#得到射线的向量" class="headerlink" title="得到射线的向量"></a>得到射线的向量</h4><p>基于上一步的位置，我们对纹理进行采样，以获得背面片段的世界空间位置。</p>
+<p>注意我们如何通过除以W将投影坐标转换为NDC(标准化设备坐标)，然后如何将其转换为[0;1]范围，以便将其用作UV坐标。当我们对之前渲染通道中生成的2D纹理采样时，就得到了射线的结束位置。</p>
+<p><strong>fragmentShaderSecondPass.frag</strong></p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将坐标从 vert shader 中传入</span></span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec3</span> worldSpaceCoords;</span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec4</span> projectedCoords;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">sampler2D</span> tex;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main( <span class="type">void</span> ) &#123;</span><br><span class="line">   <span class="comment">//转换屏幕空间坐标从 [-1;1] 到 [0;1]</span></span><br><span class="line">    <span class="type">vec2</span> texc = <span class="type">vec2</span>(((projectedCoords.x / projectedCoords.w) + <span class="number">1.0</span> ) / <span class="number">2.0</span>, ((projectedCoords.y / projectedCoords.w) + <span class="number">1.0</span> ) / <span class="number">2.0</span> );</span><br><span class="line">    <span class="comment">//后面的位置 是 存储在材质中的世界空间坐标</span></span><br><span class="line">    <span class="type">vec3</span> backPos = <span class="built_in">texture</span>(tex, texc).xyz;</span><br><span class="line">    <span class="comment">//前面的位置 是 世界空间坐标</span></span><br><span class="line">    <span class="type">vec3</span> frontPos = worldSpaceCoords;</span><br><span class="line">   <span class="comment">//从前面的位置 到 后面的位置 的向量</span></span><br><span class="line">    <span class="type">vec3</span> dir = backPos - frontPos;</span><br><span class="line">    <span class="comment">// 射线长度</span></span><br><span class="line">    <span class="type">float</span> rayLength = <span class="built_in">length</span>(dir);</span><br><span class="line">	<span class="comment">// 测试用...</span></span><br><span class="line">    <span class="built_in">gl_FragColor</span> = <span class="type">vec4</span>( backPos.rgb, <span class="number">1.0</span> );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后开启正面着色的话，就会在屏幕上绘制立方体后面的位置的坐标信息。</p>
 <h4 id="设置射线"><a href="#设置射线" class="headerlink" title="设置射线"></a>设置射线</h4><p>有了front和back位置，我们现在可以创建一个从frontPos开始并以backPos结束的射线。  </p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// step2</span></span><br><span class="line"><span class="comment">// 计算步长</span></span><br><span class="line"><span class="type">float</span> delta = <span class="number">1.0</span> / steps;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 计算长度</span></span><br><span class="line"><span class="type">vec3</span> deltaDirection = <span class="built_in">normalize</span>(dir) * delta;</span><br><span class="line"><span class="type">float</span> deltaDirectionLength = <span class="built_in">length</span>(deltaDirection);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 射线从 立方体前面位置 射入</span></span><br><span class="line"><span class="type">vec3</span> currentPosition = frontPos;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置一个颜色的累积器</span></span><br><span class="line"><span class="type">vec4</span> accumulatedColor = <span class="type">vec4</span>(<span class="number">0.0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置一个 Alpha 的累积器</span></span><br><span class="line"><span class="type">float</span> accumulatedAlpha = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 射线传播了多长的距离</span></span><br><span class="line"><span class="type">float</span> accumulatedLength = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">vec4</span> colorSample;</span><br><span class="line"><span class="type">float</span> alphaSample;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="射线发射"><a href="#射线发射" class="headerlink" title="射线发射"></a>射线发射</h4><p>一旦射线被设置好，我们的射线将从起始位置，推进射线的当前位置到 <strong>dir</strong> 。</p>
+<p>在每一步中，我们对纹理进行采样，以寻找体素强度。需要注意的是，体素只包含强度值，因此到目前为止它们还没有关于颜色的任何信息。赋予每个体素颜色的是 **变换函数 **   <strong>transform function</strong> 。可以看看 <strong>sampleAs3DTexture</strong> 函数代码，看看转换函数是如何工作的。</p>
+<p>在我们有了由sampleAs3DTexture给出的体素颜色后，它会被 <strong>alphaCorrection</strong> 参数校正。你可以在线调整这个值，看看有什么不同的结果。</p>
+<p>每次迭代的重要部分是实际的颜色构成，在这里，<strong>accumulatedColor</strong> 值被添加到之前存储的基于alpha值的值之上。我们还保存了一个<strong>alphaAccumulator</strong>，它将让我们知道何时停止射线的前进。</p>
+<p>迭代会一直进行，直到满足以下三个条件之一:</p>
+<ul>
+<li>射线走过的距离达到了假定的射线长度。记住，射线是从startPos到endPos。</li>
+<li>累计alpha值达到100%</li>
+<li>迭代达到最大常数MAX_STEPS</li>
+</ul>
+<p>最后，片段着色器返回被遍历的体素值的合成结果。</p>
+<p>改变控制面板中的 <strong>steps</strong> ，如果你可以改变每条射线的最大迭代次数，你可能需要相应地调整 <strong>alphaCorrection</strong> 值。</p>
 
     </div>
 
@@ -339,9 +369,9 @@
 
       <footer class="post-footer">
           <div class="post-tags">
+              <a href="/tags/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag"># 医学影像处理</a>
               <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
               <a href="/tags/React/" rel="tag"># React</a>
-              <a href="/tags/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag"># 医学影像处理</a>
               <a href="/tags/threejs/" rel="tag"># threejs</a>
               <a href="/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6/" rel="tag"># 图形学</a>
           </div>
@@ -418,7 +448,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%93%98%E4%BB%80%E4%B9%88%E6%98%AF%E4%BD%93%E7%BB%98%E5%88%B6-Volume-Rendering"><span class="nav-number">1.</span> <span class="nav-text">📘什么是体绘制(Volume Rendering)?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%92%99%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E5%9C%A8WebGL%E4%B8%AD%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">💙一步一步在WebGL中实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%91%A0%E7%AC%AC%E4%B8%80%E6%AD%A5-%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE"><span class="nav-number">2.1.</span> <span class="nav-text">①第一步:准备数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%91%A1%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%B8%B2%E6%9F%93%E9%80%9A%E9%81%93"><span class="nav-number">2.2.</span> <span class="nav-text">②第二步:第一个渲染通道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%91%A2%E7%AC%AC%E4%B8%89%E6%AD%A5-%E7%AC%AC%E4%BA%8C%E4%B8%AA%E6%B8%B2%E6%9F%93%E9%80%9A%E9%81%93"><span class="nav-number">2.3.</span> <span class="nav-text">③第三步:第二个渲染通道</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%B0%84%E7%BA%BF"><span class="nav-number">2.3.1.</span> <span class="nav-text">设置射线</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%93%98%E4%BB%80%E4%B9%88%E6%98%AF%E4%BD%93%E7%BB%98%E5%88%B6-Volume-Rendering"><span class="nav-number">1.</span> <span class="nav-text">📘什么是体绘制(Volume Rendering)?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%92%99%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E5%9C%A8WebGL%E4%B8%AD%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">💙一步一步在WebGL中实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%91%A0%E7%AC%AC%E4%B8%80%E6%AD%A5-%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE"><span class="nav-number">2.1.</span> <span class="nav-text">①第一步:准备数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%91%A1%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%B8%B2%E6%9F%93%E9%80%9A%E9%81%93"><span class="nav-number">2.2.</span> <span class="nav-text">②第二步:第一个渲染通道</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-WebGLRenderTarget-%E5%BB%BA%E7%AB%8B%E7%BC%93%E5%86%B2"><span class="nav-number">2.2.1.</span> <span class="nav-text">使用 WebGLRenderTarget 建立缓冲</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E8%A1%8C%E6%B8%B2%E6%9F%93"><span class="nav-number">2.2.2.</span> <span class="nav-text">进行渲染</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%91%A2%E7%AC%AC%E4%B8%89%E6%AD%A5-%E7%AC%AC%E4%BA%8C%E4%B8%AA%E6%B8%B2%E6%9F%93%E9%80%9A%E9%81%93"><span class="nav-number">2.3.</span> <span class="nav-text">③第三步:第二个渲染通道</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%97%E5%88%B0%E5%B0%84%E7%BA%BF%E7%9A%84%E5%90%91%E9%87%8F"><span class="nav-number">2.3.1.</span> <span class="nav-text">得到射线的向量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%B0%84%E7%BA%BF"><span class="nav-number">2.3.2.</span> <span class="nav-text">设置射线</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%84%E7%BA%BF%E5%8F%91%E5%B0%84"><span class="nav-number">2.3.3.</span> <span class="nav-text">射线发射</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -491,12 +521,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">91k</span>
+    <span title="站点总字数">93k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:23</span>
+    <span title="站点阅读时长">1:25</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
