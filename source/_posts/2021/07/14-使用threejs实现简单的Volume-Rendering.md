@@ -146,11 +146,13 @@ attribute vec2 uv;
 
 
 
-**这一步需要使用 WebGLRenderTarget 建立一个缓冲**
+#### 使用 WebGLRenderTarget 建立缓冲
 
-文档：https://threejs.org/docs/index.html?q=WebGLRenderTarget#api/zh/renderers/WebGLRenderTarget
+文档：
 
-render target是一个缓冲，就是在这个缓冲中，视频卡为正在后台渲染的场景绘制像素。 它用于不同的效果，例如用于在一个图像显示在屏幕上之前先做一些处理。
+https://threejs.org/docs/index.html?q=WebGLRenderTarget#api/zh/renderers/WebGLRenderTarget
+
+render target是一个缓冲，就是在这个缓冲中，显卡为正在后台渲染的场景绘制像素。 它用于不同的效果，例如用于在一个图像显示在屏幕上之前先做一些处理。
 
 ```javascript
 // 使用NearestFilter来消除插值.  在 cube 阶段, 生成世界坐标插值
@@ -160,7 +162,7 @@ const rtTexture = new THREE.WebGLRenderTarget(width, height, {
     magFilter: THREE.NearestFilter,
     wrapS: THREE.ClampToEdgeWrapping,
     wrapT: THREE.ClampToEdgeWrapping,
-    format: THREE.RGBFormat,
+    // format: THREE.RGBFormat,
     type: THREE.FloatType,
     generateMipmaps: false,
 });
@@ -187,7 +189,7 @@ ClampToEdgeWrapping是默认值，纹理中的最后一个像素将延伸到网�
 
 使用MirroredRepeatWrapping， 纹理将重复到无穷大，在每次重复时将进行镜像。
 
-**format** - 默认是RGBAFormat. **纹理的格式**
+**format** - 默认是RGBAFormat. **纹理的格式**  目前来看，好像必须设置成RGBA的格式，设置成别的格式会报warning？
 
 **type** - 默认是UnsignedByteType. 用于纹理的type属性，这些属性必须与正确的格式相对应。
 
@@ -195,13 +197,38 @@ ClampToEdgeWrapping是默认值，纹理中的最后一个像素将延伸到网�
 
 
 
+#### 进行渲染
+
+```javascript
+// Render first pass and store the world space coords of the back face fragments into the texture.
+renderer.setRenderTarget(rtTexture);
+renderer.render(sceneFirstPass, camera);
+renderer.setRenderTarget(null);
+```
+
+**使用函数：**
+
+**.setRenderTarget **
+
+**( renderTarget : WebGLRenderTarget, activeCubeFace : Integer, activeMipmapLevel : Integer ) : null**
+
+renderTarget -- 需要被激活的renderTarget(可选)。若此参数为空，则将canvas设置成活跃render target。
+activeCubeFace -- Specifies the active cube side (PX 0, NX 1, PY 2, NY 3, PZ 4, NZ 5) of WebGLCubeRenderTarget (optional).
+activeMipmapLevel -- Specifies the active mipmap level (optional).
+
+该方法设置活跃rendertarget。
+
+
+
 ### ③第三步:第二个渲染通道
 
-​	这个渲染通道实际上是执行体积光线投射的，它从绘制立方体的正面开始，正面的每个点都是射线的起点。
+这个渲染通道实际上是执行体积光线投射的，它从绘制立方体的正面开始，正面的每个点都是射线的起点。
 
-​	顶点着色器创建两个输出:**投影坐标(片段的2D屏幕坐标)(projectedCoords)** 和 **世界空间坐标 (worldSpaceCoords)** 。
+顶点着色器创建两个输出:**投影坐标(片段的2D屏幕坐标)(projectedCoords)** 和 **世界空间坐标 (worldSpaceCoords)** 。
 
-​	**世界空间坐标**将被用作射线起点，而**投影坐标**将被用于采样存储立方体背面位置的纹理。
+**世界空间坐标**将被用作射线起点，而**投影坐标**将被用于采样存储立方体背面位置的纹理。
+
+**vertexShaderSecondPass.vert**
 
 ```glsl
 varying vec3 worldSpaceCoords;
@@ -231,7 +258,93 @@ void main()
 
 
 
+#### 得到射线的向量
+
+基于上一步的位置，我们对纹理进行采样，以获得背面片段的世界空间位置。
+
+注意我们如何通过除以W将投影坐标转换为NDC(标准化设备坐标)，然后如何将其转换为[0;1]范围，以便将其用作UV坐标。当我们对之前渲染通道中生成的2D纹理采样时，就得到了射线的结束位置。
+
+**fragmentShaderSecondPass.frag**
+
+```glsl
+// 将坐标从 vert shader 中传入
+varying vec3 worldSpaceCoords;
+varying vec4 projectedCoords;
+
+uniform sampler2D tex;
+
+void main( void ) {
+   //转换屏幕空间坐标从 [-1;1] 到 [0;1]
+    vec2 texc = vec2(((projectedCoords.x / projectedCoords.w) + 1.0 ) / 2.0, ((projectedCoords.y / projectedCoords.w) + 1.0 ) / 2.0 );
+    //后面的位置 是 存储在材质中的世界空间坐标
+    vec3 backPos = texture(tex, texc).xyz;
+    //前面的位置 是 世界空间坐标
+    vec3 frontPos = worldSpaceCoords;
+   //从前面的位置 到 后面的位置 的向量
+    vec3 dir = backPos - frontPos;
+    // 射线长度
+    float rayLength = length(dir);
+	// 测试用...
+    gl_FragColor = vec4( backPos.rgb, 1.0 );
+}
+```
+
+然后开启正面着色的话，就会在屏幕上绘制立方体后面的位置的坐标信息。
+
+
+
 #### 设置射线
 
 有了front和back位置，我们现在可以创建一个从frontPos开始并以backPos结束的射线。  
+
+```glsl
+// step2
+// 计算步长
+float delta = 1.0 / steps;
+
+// 计算长度
+vec3 deltaDirection = normalize(dir) * delta;
+float deltaDirectionLength = length(deltaDirection);
+
+// 射线从 立方体前面位置 射入
+vec3 currentPosition = frontPos;
+
+// 设置一个颜色的累积器
+vec4 accumulatedColor = vec4(0.0);
+
+// 设置一个 Alpha 的累积器
+float accumulatedAlpha = 0.0;
+
+// 射线传播了多长的距离
+float accumulatedLength = 0.0;
+
+vec4 colorSample;
+float alphaSample;
+```
+
+
+
+#### 射线发射
+
+一旦射线被设置好，我们的射线将从起始位置，推进射线的当前位置到 **dir** 。
+
+在每一步中，我们对纹理进行采样，以寻找体素强度。需要注意的是，体素只包含强度值，因此到目前为止它们还没有关于颜色的任何信息。赋予每个体素颜色的是 **变换函数 **   **transform function** 。可以看看 **sampleAs3DTexture** 函数代码，看看转换函数是如何工作的。
+
+在我们有了由sampleAs3DTexture给出的体素颜色后，它会被 **alphaCorrection** 参数校正。你可以在线调整这个值，看看有什么不同的结果。
+
+每次迭代的重要部分是实际的颜色构成，在这里，**accumulatedColor** 值被添加到之前存储的基于alpha值的值之上。我们还保存了一个**alphaAccumulator**，它将让我们知道何时停止射线的前进。
+
+迭代会一直进行，直到满足以下三个条件之一:
+
+- 射线走过的距离达到了假定的射线长度。记住，射线是从startPos到endPos。
+- 累计alpha值达到100%
+- 迭代达到最大常数MAX_STEPS
+
+最后，片段着色器返回被遍历的体素值的合成结果。
+
+
+
+
+
+改变控制面板中的 **steps** ，如果你可以改变每条射线的最大迭代次数，你可能需要相应地调整 **alphaCorrection** 值。
 
