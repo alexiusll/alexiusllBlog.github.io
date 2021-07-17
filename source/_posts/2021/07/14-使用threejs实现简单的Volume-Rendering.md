@@ -65,9 +65,94 @@ tags:
 
 ​	**原始文件 Raw files**（后文都叫Raw fIle) 是非常简单的文件，只包含体素强度，它们没有头部（head）或元数据（metadata），它们通常是一个8bit 或者 16bit 的强度值，每个体素以X, Y和Z的顺序排列。
 
-​	在OpenGL或DirectX中，我们将能够在3D纹理中加载所有这些数据。但由于WebGL目前不支持存储或采样3D纹理，我们必须以一种可用于2D纹理的方式存储它（实际上现在好像可以了）。出于这个原因，我们可以存储一个带有Z切片的png图像文件，从而生成2D切片的拼接图。文章作者的开发了一个包含源代码的极其简单的转换器工具。该工具使用原始文件并生成一个png图像的拼接，在alpha通道中编码每个体素的强度(尽管理想的情况是将png存储为A8格式，只是为了节省一些空间)。
+​	在OpenGL或DirectX中，我们将能够在3D纹理中加载所有这些数据。但由于WebGL目前不支持存储或采样3D纹理，我们必须以一种可用于2D纹理的方式存储它（**实际上现在好像可以了...**）。出于这个原因，我们可以存储一个带有Z切片的png图像文件，从而生成2D切片的拼接图。文章作者的开发了一个包含源代码的极其简单的转换器工具。该工具使用原始文件并生成一个png图像的拼接，在alpha通道中编码每个体素的强度(尽管理想的情况是将png存储为A8格式，只是为了节省一些空间)。
 
 ​	一旦png文件作为2D纹理加载到内存中，我们可以使用我们自己的自定义sampleAs3DTexture函数将其作为3D纹理进行采样。
+
+
+
+因为实际上现在WebGl支持三维的纹理数据了，所以我们可以直接去生成一个三维纹理数据来作为输入。
+
+#### 方式1 直接生成像素数据:
+
+使用javascript来生成一个 **Uint8Array** 的 **TypedArray**
+
+然后在循环遍历它，填充它的像素
+
+最后将这个数组传入到 THREE.DataTexture3D 中，生成一个三维的纹理
+
+```javascript
+// create a buffer with color data
+const _width = 512;
+const _height = 512;
+const _depth = 41;
+const size = _width * _height;
+const data = new Uint8Array(4 * size * _depth);
+for (let i = 0; i < _depth; i += 1) {
+    const color = new THREE.Color(Math.random(), Math.random(), Math.random());
+    const r = Math.floor(color.r * 255);
+    const g = Math.floor(color.g * 255);
+    const b = Math.floor(color.b * 255);
+    for (let j = 0; j < size; j += 1) {
+        const stride = (i * size + j) * 4;
+        data[stride] = r;
+        data[stride + 1] = g;
+        data[stride + 2] = b;
+        data[stride + 3] = 125;
+    }
+}
+const cubeTex = new THREE.DataTexture3D(data, _width, _height, _depth);
+cubeTex.format = THREE.RGBAFormat;
+cubeTex.type = THREE.UnsignedByteType;
+cubeTex.minFilter = THREE.LinearFilter;
+cubeTex.magFilter = THREE.LinearFilter;
+cubeTex.unpackAlignment = 1;
+```
+
+
+
+#### 方式2 从DICOM文件中获取:
+
+思路是首先从DICOM中获取16bit的rawData
+
+然后将16bit的数据通过窗宽窗位的算法转为8bit的数据
+
+最后将生成的8bit数据传入到 THREE.DataTexture3D 中，生成一个三维的纹理
+
+```javascript
+	// 获取真实数据
+    const res = await getDicomSeriesImageData(uuid);
+    if (!res) return;
+    const { WW, WL, dataArray, rescaleSlope, rescaleIntercept } = store;
+    const numPixels = store.xDim * store.yDim * store.zDim;
+    const imgPixels = new Uint8Array(numPixels * 4);
+    if (WW !== null && WL !== null) {
+      for (let j = 0; j < store.zDim; j += 1) {
+        for (let i = 0; i < store.xDim * store.yDim; i += 1) {
+          const stride = (j * store.xDim * store.yDim + i) * 4;
+          // NewValue = (RawPixelValue * RescaleSlope) + RescaleIntercept
+          // U = m*SV + b
+          const valScaled =
+            dataArray[j * store.xDim * store.yDim + i] * rescaleSlope + rescaleIntercept;
+          let val = Math.floor(((valScaled - WL + WW / 2) * 255) / WW);
+            
+          val = val >= 0 ? val : 0;
+          val = val < 255 ? val : 255;
+            
+          imgPixels[stride] = val;
+          imgPixels[stride + 1] = val;
+          imgPixels[stride + 2] = val;
+          imgPixels[stride + 3] = 255;
+        }
+      }
+    }
+    const imgTexture = new THREE.DataTexture3D(imgPixels, store.xDim, store.yDim, store.zDim);
+    imgTexture.format = THREE.RGBAFormat;
+    imgTexture.type = THREE.UnsignedByteType;
+    imgTexture.minFilter = THREE.LinearFilter;
+    imgTexture.magFilter = THREE.LinearFilter;
+    imgTexture.unpackAlignment = 1;
+```
 
 
 
@@ -197,7 +282,7 @@ ClampToEdgeWrapping是默认值，纹理中的最后一个像素将延伸到网�
 
 
 
-#### 进行渲染
+#### 进行渲染，获得一个材质的缓冲
 
 ```javascript
 // Render first pass and store the world space coords of the back face fragments into the texture.
@@ -342,9 +427,157 @@ float alphaSample;
 
 最后，片段着色器返回被遍历的体素值的合成结果。
 
+```glsl
+// step3
+// 执行射线前进的迭代
+for(int i = 0; i < MAX_STEPS; i++)
+{
+    // 从3D纹理中获得体素强度值。
+    colorSample = getTexture(currentPosition);
 
+    // alpha校正
+    alphaSample = colorSample.a * alphaCorrection;
 
+    // 将这种效果应用于颜色和alpha积累，可以获得更真实的透明度。
+    alphaSample *= (1.0 - accumulatedAlpha);
 
+    // 按步长缩放alpha使最终的颜色不变。
+    alphaSample *= alphaScaleFactor;
+
+    // 执行合成
+    accumulatedColor += colorSample * alphaSample;
+
+    // 存储到目前为止积累的alpha。
+    accumulatedAlpha += alphaSample;
+
+    // 推进射线
+    currentPosition += deltaDirection;
+    accumulatedLength += deltaDirectionLength;
+
+    // 如果遍历的长度大于射线长度，或者累计的alpha达到1.0，那么退出。
+    if(accumulatedLength >= rayLength || accumulatedAlpha >= 1.0 )
+    	break;
+}
+```
 
 改变控制面板中的 **steps** ，如果你可以改变每条射线的最大迭代次数，你可能需要相应地调整 **alphaCorrection** 值。
+
+
+
+### ④渲染结果：
+
+直接渲染出来效果很差，性能表现也很一般，后续需要持续优化。
+
+![渲染结果](14-使用threejs实现简单的Volume-Rendering/111.png)
+
+
+
+## 💜补充内容
+
+### 如何设置转换方程？
+
+首先设置3种颜色的数据，和它的在 0-1 区间上的位置 位置
+
+```javascript
+  const [colorSetting, setColorSetting] = useState([
+    { color: '#00fa58', stepPos: 0.1 },
+    { color: '#cc6600', stepPos: 0.7 },
+    { color: '#f2f200', stepPos: 1 },
+  ]);
+```
+
+使用canvas来生成 转换方程 的图片
+
+它将生成为一个 three.js 中的材质数据
+
+```javascript
+  const updateTransferFunction = () => {
+    console.log('colorSetting', colorSetting);
+    const tfCanvasDom = tfCanvas.current;
+
+    tfCanvasDom.height = 20;
+    tfCanvasDom.width = 256;
+
+    const ctx = tfCanvasDom.getContext('2d');
+
+    const grd = ctx.createLinearGradient(0, 0, tfCanvasDom.width - 1, tfCanvasDom.height - 1);
+    grd.addColorStop(colorSetting[0].stepPos, colorSetting[0].color);
+    grd.addColorStop(colorSetting[1].stepPos, colorSetting[1].color);
+    grd.addColorStop(colorSetting[2].stepPos, colorSetting[2].color);
+
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, tfCanvasDom.width - 1, tfCanvasDom.height - 1);
+
+    const transferTexture = new THREE.Texture(tfCanvasDom);
+    transferTexture.wrapS = THREE.ClampToEdgeWrapping;
+    transferTexture.wrapT = THREE.ClampToEdgeWrapping;
+    transferTexture.needsUpdate = true;
+
+    return transferTexture;
+  };
+```
+
+最后以uniform的形式传入到片元着色器中
+
+```glsl
+vec4 getTexture( vec3 texCoord )
+{
+    vec4 colorSample = texture(cubeTex , texCoord);
+    vec3 color = texture( transferTex, vec2( colorSample.r, 1.0) ).rgb;
+    return vec4(color , colorSample.a) ;
+}
+```
+
+注意这里 getTexture 的方法在上文的 **射线发射** 中有使用到，即它的颜色数据从 色彩转换方程中获取
+
+这里取色的时候，Y轴可以直接取1.0，因为这个材质在x坐标相同的时候颜色一致。X轴，取colorSample中rgb任意一个通道的值。
+
+
+
+### 优化1：解决立方体边缘的错误
+
+我们获取到的第一个渲染结果，有一个显而易见的问题就是它的边缘会出现一些 ”不正确的像素“
+
+解决方案：改变 第二个渲染通道 的 片元着色器
+
+过滤掉边缘的点不进行渲染
+
+```glsl
+//Using NearestFilter for rtTexture mostly eliminates bad backPos values at the edges
+//of the cube, but there may still be no valid backPos value for the current fragment.
+if ((backPos.x == 0.0) && (backPos.y == 0.0))
+{
+    gl_FragColor = vec4(0.0);
+    return;
+}
+```
+
+**效果：**
+
+![112](14-使用threejs实现简单的Volume-Rendering/112.png)
+
+
+
+### 优化2：过滤掉一些太黑的像素
+
+目前存在的问题的是，所有的像素的alpha都设置为了255，于是一些很黑的像素可能会遮挡视野，导致渲染的结果看起来很像一个立方体。
+
+思路：将像素的 **alpha** 值 设置为它的灰度值
+
+```javascript
+ imgPixels[stride] = val;
+ imgPixels[stride + 1] = val;
+ imgPixels[stride + 2] = val;
+ imgPixels[stride + 3] = val;
+```
+
+**效果：**
+
+![113](14-使用threejs实现简单的Volume-Rendering/113.png)
+
+### 后续优化...
+
+目前渲染出来的影像，由于原数据只有41层，层数比较少，所以锯齿感很强，要消除锯齿。
+
+渲染效率很低，当steps值设置很高的时候，渲染速度会很卡，还需要继续优化算法
 
