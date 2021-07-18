@@ -29,13 +29,14 @@
 <meta property="og:description" content="因为项目需要，现在要在web上实现一个体绘制（Volume Rendering） 本文的内容将会基于github项目: https:&#x2F;&#x2F;github.com&#x2F;lebarba&#x2F;WebGLVolumeRendering 多数内容翻译自文档 : http:&#x2F;&#x2F;www.lebarba.com&#x2F;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/voxels.jpg">
+<meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/114.png">
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/tu.jpg">
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/rays.jpg">
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/111.png">
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/112.png">
 <meta property="og:image" content="https://alexiusll.github.io/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/113.png">
 <meta property="article:published_time" content="2021-07-14T08:35:05.000Z">
-<meta property="article:modified_time" content="2021-07-17T17:32:30.849Z">
+<meta property="article:modified_time" content="2021-07-18T15:39:39.161Z">
 <meta property="article:author" content="alexiusll">
 <meta property="article:tag" content="医学影像处理">
 <meta property="article:tag" content="前端">
@@ -244,14 +245,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>11k</span>
+              <span>12k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>10 分钟</span>
+              <span>11 分钟</span>
             </span>
 
         </div>
@@ -279,6 +280,10 @@
 <h3 id="①第一步-准备数据"><a href="#①第一步-准备数据" class="headerlink" title="①第一步:准备数据"></a>①第一步:准备数据</h3><p>​    <strong>原始文件 Raw files</strong>（后文都叫Raw fIle) 是非常简单的文件，只包含体素强度，它们没有头部（head）或元数据（metadata），它们通常是一个8bit 或者 16bit 的强度值，每个体素以X, Y和Z的顺序排列。</p>
 <p>​    在OpenGL或DirectX中，我们将能够在3D纹理中加载所有这些数据。但由于WebGL目前不支持存储或采样3D纹理，我们必须以一种可用于2D纹理的方式存储它（**实际上现在好像可以了…**）。出于这个原因，我们可以存储一个带有Z切片的png图像文件，从而生成2D切片的拼接图。文章作者的开发了一个包含源代码的极其简单的转换器工具。该工具使用原始文件并生成一个png图像的拼接，在alpha通道中编码每个体素的强度(尽管理想的情况是将png存储为A8格式，只是为了节省一些空间)。</p>
 <p>​    一旦png文件作为2D纹理加载到内存中，我们可以使用我们自己的自定义sampleAs3DTexture函数将其作为3D纹理进行采样。</p>
+<p>原文中的数据格式十分有趣：</p>
+<p><img src="/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/114.png" alt="114"></p>
+<p>这里只展示部分数据…实际数据太大，有将近5MB</p>
+<p>它是由16 * 16 个图片拼接得到的，类似做2D游戏的时候，将多个素材拼接到一个材质上</p>
 <p>因为实际上现在WebGl支持三维的纹理数据了，所以我们可以直接去生成一个三维纹理数据来作为输入。</p>
 <h4 id="方式1-直接生成像素数据"><a href="#方式1-直接生成像素数据" class="headerlink" title="方式1 直接生成像素数据:"></a>方式1 直接生成像素数据:</h4><p>使用javascript来生成一个 <strong>Uint8Array</strong> 的 <strong>TypedArray</strong></p>
 <p>然后在循环遍历它，填充它的像素</p>
@@ -362,7 +367,7 @@
 
 <p>然后开启正面着色的话，就会在屏幕上绘制立方体后面的位置的坐标信息。</p>
 <h4 id="设置射线"><a href="#设置射线" class="headerlink" title="设置射线"></a>设置射线</h4><p>有了front和back位置，我们现在可以创建一个从frontPos开始并以backPos结束的射线。  </p>
-<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// step2</span></span><br><span class="line"><span class="comment">// 计算步长</span></span><br><span class="line"><span class="type">float</span> delta = <span class="number">1.0</span> / steps;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 计算长度</span></span><br><span class="line"><span class="type">vec3</span> deltaDirection = <span class="built_in">normalize</span>(dir) * delta;</span><br><span class="line"><span class="type">float</span> deltaDirectionLength = <span class="built_in">length</span>(deltaDirection);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 射线从 立方体前面位置 射入</span></span><br><span class="line"><span class="type">vec3</span> currentPosition = frontPos;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置一个颜色的累积器</span></span><br><span class="line"><span class="type">vec4</span> accumulatedColor = <span class="type">vec4</span>(<span class="number">0.0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置一个 Alpha 的累积器</span></span><br><span class="line"><span class="type">float</span> accumulatedAlpha = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 射线传播了多长的距离</span></span><br><span class="line"><span class="type">float</span> accumulatedLength = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">vec4</span> colorSample;</span><br><span class="line"><span class="type">float</span> alphaSample;</span><br></pre></td></tr></table></figure>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// step2</span></span><br><span class="line"><span class="comment">// 计算步长</span></span><br><span class="line"><span class="type">float</span> delta = <span class="number">1.0</span> / steps;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 计算长度</span></span><br><span class="line"><span class="type">vec3</span> deltaDirection = <span class="built_in">normalize</span>(dir) * delta;</span><br><span class="line"><span class="type">float</span> deltaDirectionLength = <span class="built_in">length</span>(deltaDirection);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 射线从 立方体前面位置 射入</span></span><br><span class="line"><span class="type">vec3</span> currentPosition = frontPos;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置一个颜色的累积器</span></span><br><span class="line"><span class="type">vec4</span> accumulatedColor = <span class="type">vec4</span>(<span class="number">0.0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置一个 Alpha 的累积器</span></span><br><span class="line"><span class="type">float</span> accumulatedAlpha = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 射线传播了多长的距离</span></span><br><span class="line"><span class="type">float</span> accumulatedLength = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//If we have twice as many samples, we only need ~1/2 the alpha per sample.</span></span><br><span class="line"><span class="comment">//Scaling by 256/10 just happens to give a good value for the alphaCorrection slider.</span></span><br><span class="line"><span class="type">float</span> alphaScaleFactor = <span class="number">25.6</span> * delta;</span><br><span class="line"></span><br><span class="line"><span class="type">vec4</span> colorSample;</span><br><span class="line"><span class="type">float</span> alphaSample;</span><br></pre></td></tr></table></figure>
 
 
 
@@ -374,12 +379,23 @@
 <ul>
 <li>射线走过的距离达到了假定的射线长度。记住，射线是从startPos到endPos。</li>
 <li>累计alpha值达到100%</li>
-<li>迭代达到最大常数MAX_STEPS</li>
+<li>迭代达到最大常数 MAX_STEPS （本例中，由于生成的体素数据为512 * 512 * 512 的，所以MAX_STEPS 设置为 512倍的根号三，约等于887)</li>
 </ul>
 <p>最后，片段着色器返回被遍历的体素值的合成结果。</p>
-<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// step3</span></span><br><span class="line"><span class="comment">// 执行射线前进的迭代</span></span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; MAX_STEPS; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 从3D纹理中获得体素强度值。</span></span><br><span class="line">    colorSample = getTexture(currentPosition);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// alpha校正</span></span><br><span class="line">    alphaSample = colorSample.a * alphaCorrection;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将这种效果应用于颜色和alpha积累，可以获得更真实的透明度。</span></span><br><span class="line">    alphaSample *= (<span class="number">1.0</span> - accumulatedAlpha);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 按步长缩放alpha使最终的颜色不变。</span></span><br><span class="line">    alphaSample *= alphaScaleFactor;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行合成</span></span><br><span class="line">    accumulatedColor += colorSample * alphaSample;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 存储到目前为止积累的alpha。</span></span><br><span class="line">    accumulatedAlpha += alphaSample;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 推进射线</span></span><br><span class="line">    currentPosition += deltaDirection;</span><br><span class="line">    accumulatedLength += deltaDirectionLength;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果遍历的长度大于射线长度，或者累计的alpha达到1.0，那么退出。</span></span><br><span class="line">    <span class="keyword">if</span>(accumulatedLength &gt;= rayLength || accumulatedAlpha &gt;= <span class="number">1.0</span> )</span><br><span class="line">    	<span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// step3</span></span><br><span class="line"><span class="comment">// 执行射线前进的迭代</span></span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; MAX_STEPS; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 从3D纹理中获得体素强度值。</span></span><br><span class="line">    colorSample = getTexture(currentPosition);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// alpha校正</span></span><br><span class="line">    alphaSample = colorSample.a * alphaCorrection;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将这种效果应用于颜色和alpha积累，可以获得更真实的透明度。</span></span><br><span class="line">    alphaSample *= (<span class="number">1.0</span> - accumulatedAlpha);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 按步长缩放alpha 使最终颜色不受步长影响。</span></span><br><span class="line">    alphaSample *= alphaScaleFactor;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行合成</span></span><br><span class="line">    accumulatedColor += colorSample * alphaSample;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 存储到目前为止积累的alpha。</span></span><br><span class="line">    accumulatedAlpha += alphaSample;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 推进射线</span></span><br><span class="line">    currentPosition += deltaDirection;</span><br><span class="line">    accumulatedLength += deltaDirectionLength;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果遍历的长度大于射线长度，或者累计的alpha达到1.0，那么退出。</span></span><br><span class="line">    <span class="keyword">if</span>(accumulatedLength &gt;= rayLength || accumulatedAlpha &gt;= <span class="number">1.0</span> )</span><br><span class="line">    	<span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>改变控制面板中的 <strong>steps</strong> ，如果你可以改变每条射线的最大迭代次数，你可能需要相应地调整 <strong>alphaCorrection</strong> 值。</p>
+<p>改变控制面板中的 <strong>steps</strong> ，可以改变每条射线的最大迭代次数，可能需要相应地调整 <strong>alphaCorrection</strong> 值。</p>
+<p><strong>注解：</strong></p>
+<p><strong>每次迭代的步骤：</strong></p>
+<ol>
+<li> 从3D纹理中获得体素强度值。（这一步利用函数 getTexture 实际上是从转换方程中获取到颜色值）</li>
+<li> alpha校正，这里默认 alphaCorrection 的值设置为 <strong>0.1</strong> （即实际拿到的 RGBA颜色 的 alpha 值，取它的十分之一）</li>
+<li>获取到的 alpha值 ，还要乘以 <strong>(1.0 - accumulatedAlpha)</strong> ，即越往后的像素点，对于 alpha累计值 的影响越小</li>
+<li>再将 alpha 的值乘以 <strong>alphaScaleFactor</strong> ，按步长缩放 alpha 使最终颜色不受步长影响。</li>
+<li>执行合成 ： accumulatedColor += colorSample * alphaSample;</li>
+<li>存储到目前为止积累的alpha： accumulatedAlpha += alphaSample;</li>
+<li>推进射线</li>
+</ol>
 <h3 id="④渲染结果："><a href="#④渲染结果：" class="headerlink" title="④渲染结果："></a>④渲染结果：</h3><p>直接渲染出来效果很差，性能表现也很一般，后续需要持续优化。</p>
 <p><img src="/2021-07-14-%E4%BD%BF%E7%94%A8threejs%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84Volume-Rendering/111.png" alt="渲染结果"></p>
 <h2 id="💜补充内容"><a href="#💜补充内容" class="headerlink" title="💜补充内容"></a>💜补充内容</h2><h3 id="如何设置转换方程？"><a href="#如何设置转换方程？" class="headerlink" title="如何设置转换方程？"></a>如何设置转换方程？</h3><p>首先设置3种颜色的数据，和它的在 0-1 区间上的位置 位置</p>
@@ -570,12 +586,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">98k</span>
+    <span title="站点总字数">99k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:29</span>
+    <span title="站点阅读时长">1:30</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
