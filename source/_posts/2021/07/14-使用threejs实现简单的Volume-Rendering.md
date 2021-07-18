@@ -69,6 +69,14 @@ tags:
 
 ​	一旦png文件作为2D纹理加载到内存中，我们可以使用我们自己的自定义sampleAs3DTexture函数将其作为3D纹理进行采样。
 
+原文中的数据格式十分有趣：
+
+![114](14-使用threejs实现简单的Volume-Rendering/114.png)
+
+这里只展示部分数据...实际数据太大，有将近5MB
+
+它是由16 * 16 个图片拼接得到的，类似做2D游戏的时候，将多个素材拼接到一个材质上
+
 
 
 因为实际上现在WebGl支持三维的纹理数据了，所以我们可以直接去生成一个三维纹理数据来作为输入。
@@ -403,6 +411,10 @@ float accumulatedAlpha = 0.0;
 // 射线传播了多长的距离
 float accumulatedLength = 0.0;
 
+//If we have twice as many samples, we only need ~1/2 the alpha per sample.
+//Scaling by 256/10 just happens to give a good value for the alphaCorrection slider.
+float alphaScaleFactor = 25.6 * delta;
+
 vec4 colorSample;
 float alphaSample;
 ```
@@ -423,7 +435,7 @@ float alphaSample;
 
 - 射线走过的距离达到了假定的射线长度。记住，射线是从startPos到endPos。
 - 累计alpha值达到100%
-- 迭代达到最大常数MAX_STEPS
+- 迭代达到最大常数 MAX_STEPS （本例中，由于生成的体素数据为512 * 512 * 512 的，所以MAX_STEPS 设置为 512倍的根号三，约等于887)
 
 最后，片段着色器返回被遍历的体素值的合成结果。
 
@@ -441,7 +453,7 @@ for(int i = 0; i < MAX_STEPS; i++)
     // 将这种效果应用于颜色和alpha积累，可以获得更真实的透明度。
     alphaSample *= (1.0 - accumulatedAlpha);
 
-    // 按步长缩放alpha使最终的颜色不变。
+    // 按步长缩放alpha 使最终颜色不受步长影响。
     alphaSample *= alphaScaleFactor;
 
     // 执行合成
@@ -460,7 +472,21 @@ for(int i = 0; i < MAX_STEPS; i++)
 }
 ```
 
-改变控制面板中的 **steps** ，如果你可以改变每条射线的最大迭代次数，你可能需要相应地调整 **alphaCorrection** 值。
+改变控制面板中的 **steps** ，可以改变每条射线的最大迭代次数，可能需要相应地调整 **alphaCorrection** 值。
+
+
+
+**注解：**
+
+**每次迭代的步骤：**
+
+1.  从3D纹理中获得体素强度值。（这一步利用函数 getTexture 实际上是从转换方程中获取到颜色值）
+2.  alpha校正，这里默认 alphaCorrection 的值设置为 **0.1** （即实际拿到的 RGBA颜色 的 alpha 值，取它的十分之一）
+3. 获取到的 alpha值 ，还要乘以 **(1.0 - accumulatedAlpha)** ，即越往后的像素点，对于 alpha累计值 的影响越小
+4. 再将 alpha 的值乘以 **alphaScaleFactor** ，按步长缩放 alpha 使最终颜色不受步长影响。
+5. 执行合成 ： accumulatedColor += colorSample * alphaSample;
+6. 存储到目前为止积累的alpha： accumulatedAlpha += alphaSample;
+7. 推进射线
 
 
 
