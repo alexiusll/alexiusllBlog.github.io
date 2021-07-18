@@ -235,7 +235,7 @@ attribute vec2 uv;
 
 ![tu](14-使用threejs实现简单的Volume-Rendering/tu.jpg)
 
-​																			左边是 back side  右边是 back side
+​																			左边是 back side  右边是 Front side
 
 
 
@@ -301,15 +301,13 @@ renderer.setRenderTarget(null);
 
 **使用函数：**
 
-**.setRenderTarget **
+**setRenderTarget **  该方法设置活跃rendertarget。
 
 **( renderTarget : WebGLRenderTarget, activeCubeFace : Integer, activeMipmapLevel : Integer ) : null**
 
-renderTarget -- 需要被激活的renderTarget(可选)。若此参数为空，则将canvas设置成活跃render target。
-activeCubeFace -- Specifies the active cube side (PX 0, NX 1, PY 2, NY 3, PZ 4, NZ 5) of WebGLCubeRenderTarget (optional).
-activeMipmapLevel -- Specifies the active mipmap level (optional).
-
-该方法设置活跃rendertarget。
+**renderTarget** -- 需要被激活的renderTarget(可选)。若此参数为空，则将canvas设置成活跃render target。
+**activeCubeFace** -- Specifies the active cube side (PX 0, NX 1, PY 2, NY 3, PZ 4, NZ 5) of WebGLCubeRenderTarget (optional).
+**activeMipmapLevel** -- Specifies the active mipmap level (optional).
 
 
 
@@ -425,7 +423,7 @@ float alphaSample;
 
 一旦射线被设置好，我们的射线将从起始位置，推进射线的当前位置到 **dir** 。
 
-在每一步中，我们对纹理进行采样，以寻找体素强度。需要注意的是，体素只包含强度值，因此到目前为止它们还没有关于颜色的任何信息。赋予每个体素颜色的是 **变换函数 **   **transform function** 。可以看看 **sampleAs3DTexture** 函数代码，看看转换函数是如何工作的。
+在每一步中，我们对纹理进行采样，以寻找体素强度。需要注意的是，体素只包含强度值，因此到目前为止它们还没有关于颜色的任何信息。赋予每个体素颜色的是**变换函数 **（**transform function** ）。可以看看 **sampleAs3DTexture** 函数代码，看看转换函数是如何工作的。
 
 在我们有了由sampleAs3DTexture给出的体素颜色后，它会被 **alphaCorrection** 参数校正。你可以在线调整这个值，看看有什么不同的结果。
 
