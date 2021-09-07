@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+<meta name="baidu-site-verification" content="code-ipFSuNxhZV" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"alexiusll.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="探索 cornerstone中渲染 DICOM 2D图像的方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分析 cornerstone.js 中渲染图像的方法">
+<meta property="og:url" content="https://alexiusll.github.io/2021-09-06-%E5%88%86%E6%9E%90-cornerstone-js-%E4%B8%AD%E6%B8%B2%E6%9F%93%E5%9B%BE%E5%83%8F%E7%9A%84%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="alexiusll 的博客">
+<meta property="og:description" content="探索 cornerstone中渲染 DICOM 2D图像的方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-09-06T03:10:16.000Z">
+<meta property="article:modified_time" content="2021-09-07T02:05:08.677Z">
+<meta property="article:author" content="alexiusll">
+<meta property="article:tag" content="医学影像处理">
+<meta property="article:tag" content="前端">
+<meta property="article:tag" content="vtk.js">
+<meta property="article:tag" content="React">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://alexiusll.github.io/2021-09-06-%E5%88%86%E6%9E%90-cornerstone-js-%E4%B8%AD%E6%B8%B2%E6%9F%93%E5%9B%BE%E5%83%8F%E7%9A%84%E6%96%B9%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>分析 cornerstone.js 中渲染图像的方法 | alexiusll 的博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?80dbe2fa10c94d76691cf667b9e57694";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">alexiusll 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">14</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://alexiusll.github.io/2021-09-06-%E5%88%86%E6%9E%90-cornerstone-js-%E4%B8%AD%E6%B8%B2%E6%9F%93%E5%9B%BE%E5%83%8F%E7%9A%84%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="alexiusll">
+      <meta itemprop="description" content="alexiusll 的博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alexiusll 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分析 cornerstone.js 中渲染图像的方法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-06 11:10:16" itemprop="dateCreated datePublished" datetime="2021-09-06T11:10:16+08:00">2021-09-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">医学影像处理</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021-09-06-%E5%88%86%E6%9E%90-cornerstone-js-%E4%B8%AD%E6%B8%B2%E6%9F%93%E5%9B%BE%E5%83%8F%E7%9A%84%E6%96%B9%E6%B3%95/" class="post-meta-item leancloud_visitors" data-flag-title="分析 cornerstone.js 中渲染图像的方法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021-09-06-%E5%88%86%E6%9E%90-cornerstone-js-%E4%B8%AD%E6%B8%B2%E6%9F%93%E5%9B%BE%E5%83%8F%E7%9A%84%E6%96%B9%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021-09-06-%E5%88%86%E6%9E%90-cornerstone-js-%E4%B8%AD%E6%B8%B2%E6%9F%93%E5%9B%BE%E5%83%8F%E7%9A%84%E6%96%B9%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>22k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>20 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>探索 cornerstone中渲染 DICOM 2D图像的方法</p>
+<span id="more"></span>
+
+<p><strong>cornerstonejs</strong></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/cornerstonejs/cornerstone">https://github.com/cornerstonejs/cornerstone</a></p>
+<h2 id="cornerstone使用例"><a href="#cornerstone使用例" class="headerlink" title="cornerstone使用例"></a>cornerstone使用例</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- include the cornerstone library --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;../../dist/cornerstone.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.cornerstone || <span class="built_in">document</span>.write(<span class="string">&#x27;&lt;script src=&quot;https://unpkg.com/cornerstone-core&quot;&gt;\x3C/script&gt;&#x27;</span>)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- include special code for these examples which provides images --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;../exampleImageIdLoader.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="comment">// image enable the element</span></span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> element = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;dicomImage&#x27;</span>);</span></span><br><span class="line"><span class="javascript">    cornerstone.enable(element);</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="comment">// load the image and display it</span></span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> imageId = <span class="string">&#x27;example://1&#x27;</span>;</span></span><br><span class="line"><span class="javascript">    cornerstone.loadImage(imageId).then(<span class="function"><span class="keyword">function</span>(<span class="params">image</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">       cornerstone.displayImage(element, image);</span></span><br><span class="line"><span class="javascript">    &#125;);</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="comment">// Add event handler to the ww/wc apply button</span></span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.getElementById(<span class="string">&#x27;apply&#x27;</span>).addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">let</span> viewport = cornerstone.getViewport(element);</span></span><br><span class="line"><span class="javascript">        viewport.voi.windowWidth = <span class="built_in">parseFloat</span>(<span class="built_in">document</span>.getElementById(<span class="string">&#x27;ww&#x27;</span>).value);</span></span><br><span class="line"><span class="javascript">        viewport.voi.windowCenter = <span class="built_in">parseFloat</span>(<span class="built_in">document</span>.getElementById(<span class="string">&#x27;wc&#x27;</span>).value);</span></span><br><span class="line"><span class="javascript">        cornerstone.setViewport(element, viewport);</span></span><br><span class="line"><span class="javascript">    &#125;);</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.getElementById(<span class="string">&#x27;invert&#x27;</span>).addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">let</span> viewport = cornerstone.getViewport(element);</span></span><br><span class="line"><span class="javascript">        viewport.invert = !viewport.invert;</span></span><br><span class="line"><span class="javascript">        cornerstone.setViewport(element, viewport);</span></span><br><span class="line"><span class="javascript">    &#125;);</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="comment">// add event handlers to mouse move to adjust window/center</span></span></span><br><span class="line"><span class="javascript">    element.addEventListener(<span class="string">&#x27;mousedown&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">let</span> lastX = e.pageX;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">let</span> lastY = e.pageY;</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">        <span class="function"><span class="keyword">function</span> <span class="title">mouseMoveHandler</span>(<span class="params">e</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">const</span> deltaX = e.pageX - lastX;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">const</span> deltaY = e.pageY - lastY;</span></span><br><span class="line"><span class="javascript">            lastX = e.pageX;</span></span><br><span class="line"><span class="javascript">            lastY = e.pageY;</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">            <span class="keyword">let</span> viewport = cornerstone.getViewport(element);</span></span><br><span class="line"><span class="javascript">            viewport.voi.windowWidth += (deltaX / viewport.scale);</span></span><br><span class="line"><span class="javascript">            viewport.voi.windowCenter += (deltaY / viewport.scale);</span></span><br><span class="line"><span class="javascript">            cornerstone.setViewport(element, viewport);</span></span><br><span class="line"><span class="javascript">        &#125;;</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">        <span class="function"><span class="keyword">function</span> <span class="title">mouseUpHandler</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">document</span>.removeEventListener(<span class="string">&#x27;mousemove&#x27;</span>, mouseMoveHandler);</span></span><br><span class="line"><span class="javascript">            <span class="built_in">document</span>.removeEventListener(<span class="string">&#x27;mouseup&#x27;</span>, mouseUpHandler);</span></span><br><span class="line"><span class="javascript">        &#125;</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.addEventListener(<span class="string">&#x27;mousemove&#x27;</span>, mouseMoveHandler);</span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.addEventListener(<span class="string">&#x27;mouseup&#x27;</span>, mouseUpHandler);</span></span><br><span class="line"><span class="javascript">    &#125;);</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="渲染单张DICOM数据的核心代码"><a href="#渲染单张DICOM数据的核心代码" class="headerlink" title="渲染单张DICOM数据的核心代码"></a>渲染单张DICOM数据的核心代码</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cornerstone.loadImage(imageId).then(<span class="function"><span class="keyword">function</span>(<span class="params">image</span>) </span>&#123;</span><br><span class="line">      cornerstone.displayImage(element, image);</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>其中 exampleImageIdLoader.js 为自定义Loader</p>
+<h2 id="cornerstone-源码解析"><a href="#cornerstone-源码解析" class="headerlink" title="cornerstone 源码解析"></a>cornerstone 源码解析</h2><p>显示图片的核心方法又2个</p>
+<ul>
+<li>loadImage</li>
+<li>displayImage</li>
+</ul>
+<h3 id="1-loadImage"><a href="#1-loadImage" class="headerlink" title="1 loadImage"></a>1 loadImage</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Loads an image given an imageId and optional priority and returns a promise which will resolve to</span></span><br><span class="line"><span class="comment"> * the loaded image object or fail if an error occurred.  The loaded image is not stored in the cache.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;String&#125;</span> </span>imageId A Cornerstone Image Object&#x27;s imageId</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Object&#125;</span> </span>[options] Options to be passed to the Image Loader</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;ImageLoadObject&#125;</span> </span>An Object which can be used to act after an image is loaded or loading fails</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">ImageLoader</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">loadImage</span> (<span class="params">imageId, options</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (imageId === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&#x27;loadImage: parameter imageId must not be undefined&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> imageLoadObject = getImageLoadObject(imageId);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (imageLoadObject !== <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> imageLoadObject.promise;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> loadImageFromImageLoader(imageId, options).promise;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>加载一个给定 imageId 和 选项 的图像，并返回一个promise，该promise将解析到加载的图像object，或者在发生错误时失败。</p>
+<p>加载的图像不存储在缓存中。</p>
+<p><strong>getImageLoadObject</strong> 该方法，返回的是缓存中的图片。所以来看 <strong>loadImageFromImageLoader</strong> 方法</p>
+<h4 id="1-1-loadImageFromImageLoader"><a href="#1-1-loadImageFromImageLoader" class="headerlink" title="1.1 loadImageFromImageLoader"></a>1.1 loadImageFromImageLoader</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Load an image using a registered Cornerstone Image Loader.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The image loader that is used will be</span></span><br><span class="line"><span class="comment"> * determined by the image loader scheme matching against the imageId.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;String&#125;</span> </span>imageId A Cornerstone Image Object&#x27;s imageId</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Object&#125;</span> </span>[options] Options to be passed to the Image Loader</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;ImageLoadObject&#125;</span> </span>An Object which can be used to act after an image is loaded or loading fails</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">ImageLoader</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">loadImageFromImageLoader</span> (<span class="params">imageId, options</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> colonIndex = imageId.indexOf(<span class="string">&#x27;:&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> scheme = imageId.substring(<span class="number">0</span>, colonIndex);</span><br><span class="line">  <span class="keyword">const</span> loader = imageLoaders[scheme];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (loader === <span class="literal">undefined</span> || loader === <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (unknownImageLoader !== <span class="literal">undefined</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> unknownImageLoader(imageId);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&#x27;loadImageFromImageLoader: no image loader for imageId&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> imageLoadObject = loader(imageId, options);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Broadcast an image loaded event once the image is loaded</span></span><br><span class="line">  imageLoadObject.promise.then(<span class="function"><span class="keyword">function</span> (<span class="params">image</span>) </span>&#123;</span><br><span class="line">    triggerEvent(events, EVENTS.IMAGE_LOADED, &#123; image &#125;);</span><br><span class="line">  &#125;, <span class="function"><span class="keyword">function</span> (<span class="params">error</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> errorObject = &#123;</span><br><span class="line">      imageId,</span><br><span class="line">      error</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    triggerEvent(events, EVENTS.IMAGE_LOAD_FAILED, errorObject);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> imageLoadObject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用注册的Cornerstone image Loader加载图像。</p>
+<p><strong>本例中：</strong></p>
+<p>const imageId = ‘example://1’;</p>
+<p>此时 scheme =  “example”</p>
+<p>加载的loader 为：imageLoaders[“example”]</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// register our imageLoader plugin with cornerstone</span></span><br><span class="line">    cs.registerImageLoader(<span class="string">&#x27;example&#x27;</span>, getExampleImage);</span><br></pre></td></tr></table></figure>
+
+<p>这个为自定义loader，已经注册在cornerstone中。</p>
+<p><strong>图片加载过程</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getExampleImage</span>(<span class="params">imageId</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">const</span> width = <span class="number">256</span>;</span><br><span class="line">        <span class="keyword">const</span> height = <span class="number">256</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">getPixelData</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(imageId === <span class="string">&#x27;example://1&#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> image1PixelData;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (imageId === <span class="string">&#x27;example://2&#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> image2PixelData;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">throw</span> <span class="string">&quot;unknown imageId&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> image = &#123;</span><br><span class="line">            <span class="attr">imageId</span>: imageId,</span><br><span class="line">            <span class="attr">minPixelValue</span> : <span class="number">0</span>,</span><br><span class="line">            <span class="attr">maxPixelValue</span> : <span class="number">257</span>,</span><br><span class="line">            <span class="attr">slope</span>: <span class="number">1.0</span>,</span><br><span class="line">            <span class="attr">intercept</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">windowCenter</span> : <span class="number">127</span>,</span><br><span class="line">            <span class="attr">windowWidth</span> : <span class="number">256</span>,</span><br><span class="line">            <span class="attr">getPixelData</span>: getPixelData,</span><br><span class="line">            <span class="attr">rows</span>: height,</span><br><span class="line">            <span class="attr">columns</span>: width,</span><br><span class="line">            <span class="attr">height</span>: height,</span><br><span class="line">            <span class="attr">width</span>: width,</span><br><span class="line">            <span class="attr">color</span>: <span class="literal">false</span>,</span><br><span class="line">            <span class="attr">columnPixelSpacing</span>: <span class="number">.8984375</span>,</span><br><span class="line">            <span class="attr">rowPixelSpacing</span>: <span class="number">.8984375</span>,</span><br><span class="line">            <span class="attr">sizeInBytes</span>: width * height * <span class="number">2</span></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">promise</span>: <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">              resolve(image);</span><br><span class="line">            &#125;),</span><br><span class="line">            <span class="attr">cancelFn</span>: <span class="literal">undefined</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>核心</strong></p>
+<p>主要想要得到的东西就是 image object</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> image = &#123;</span><br><span class="line">    <span class="attr">imageId</span>: imageId,</span><br><span class="line">    <span class="attr">minPixelValue</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">maxPixelValue</span> : <span class="number">257</span>,</span><br><span class="line">    <span class="attr">slope</span>: <span class="number">1.0</span>,</span><br><span class="line">    <span class="attr">intercept</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">windowCenter</span> : <span class="number">127</span>,</span><br><span class="line">    <span class="attr">windowWidth</span> : <span class="number">256</span>,</span><br><span class="line">    <span class="attr">getPixelData</span>: getPixelData,</span><br><span class="line">    <span class="attr">rows</span>: height,</span><br><span class="line">    <span class="attr">columns</span>: width,</span><br><span class="line">    <span class="attr">height</span>: height,</span><br><span class="line">    <span class="attr">width</span>: width,</span><br><span class="line">    <span class="attr">color</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">columnPixelSpacing</span>: <span class="number">.8984375</span>,</span><br><span class="line">    <span class="attr">rowPixelSpacing</span>: <span class="number">.8984375</span>,</span><br><span class="line">    <span class="attr">sizeInBytes</span>: width * height * <span class="number">2</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-displayImage"><a href="#2-displayImage" class="headerlink" title="2 displayImage"></a>2 displayImage</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Sets a new image object for a given element.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Will also apply an optional viewport setting.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;HTMLElement&#125;</span> </span>element An HTML Element enabled for Cornerstone</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Object&#125;</span> </span>image An Image loaded by a Cornerstone Image Loader</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Object&#125;</span> </span>[viewport] A set of Cornerstone viewport parameters</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;void&#125;</span></span></span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">Drawing</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">element, image, viewport</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (element === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&#x27;displayImage: parameter element must not be undefined&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (image === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&#x27;displayImage: parameter image must not be undefined&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> enabledElement = getEnabledElement(element);</span><br><span class="line">  <span class="keyword">const</span> oldImage = enabledElement.image;</span><br><span class="line"></span><br><span class="line">  enabledElement.image = image;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (enabledElement.layers &amp;&amp; enabledElement.layers.length) &#123;</span><br><span class="line">    setLayerImage(element, image);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (enabledElement.viewport === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    enabledElement.viewport = getDefaultViewport(enabledElement.canvas, image);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Merge viewport</span></span><br><span class="line">  <span class="keyword">if</span> (viewport) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> attrname <span class="keyword">in</span> viewport) &#123;</span><br><span class="line">      <span class="keyword">if</span> (viewport[attrname] !== <span class="literal">null</span>) &#123;</span><br><span class="line">        enabledElement.viewport[attrname] = viewport[attrname];</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> frameRate;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (enabledElement.lastImageTimeStamp !== <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> timeSinceLastImage = now() - enabledElement.lastImageTimeStamp;</span><br><span class="line"></span><br><span class="line">    frameRate = (<span class="number">1000</span> / timeSinceLastImage).toFixed();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  enabledElement.lastImageTimeStamp = now();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> newImageEventData = &#123;</span><br><span class="line">    <span class="attr">viewport</span>: enabledElement.viewport,</span><br><span class="line">    <span class="attr">element</span>: enabledElement.element,</span><br><span class="line">    <span class="attr">image</span>: enabledElement.image,</span><br><span class="line">    oldImage,</span><br><span class="line">    enabledElement,</span><br><span class="line">    frameRate</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  triggerEvent(enabledElement.element, EVENTS.NEW_IMAGE, newImageEventData);</span><br><span class="line"></span><br><span class="line">  updateImage(element);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>为给定元素设置一个新的图像对象。</p>
+<h4 id="2-1-核心方法-updateImage"><a href="#2-1-核心方法-updateImage" class="headerlink" title="2.1 核心方法 updateImage"></a>2.1 核心方法 updateImage</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Forces the image to be updated/redrawn for the specified enabled element</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;HTMLElement&#125;</span> </span>element An HTML Element enabled for Cornerstone</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Boolean&#125;</span> </span>[invalidated=false] Whether or not the image pixel data has been changed, necessitating a redraw</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;void&#125;</span></span></span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">Drawing</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">element, invalidated = <span class="literal">false</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> enabledElement = getEnabledElement(element);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (enabledElement.image === <span class="literal">undefined</span> &amp;&amp; !enabledElement.layers.length) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&#x27;updateImage: image has not been loaded yet&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  drawImage(enabledElement, invalidated);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>强制更新/重绘指定启用元素的图像</p>
+<h5 id="2-1-1-drawImage"><a href="#2-1-1-drawImage" class="headerlink" title="2.1.1 drawImage"></a>2.1.1 drawImage</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Internal API function to draw an image to a given enabled element</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;EnabledElement&#125;</span> </span>enabledElement The Cornerstone Enabled Element to redraw</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Boolean&#125;</span> </span>[invalidated = false] - true if pixel data has been invalidated and cached rendering should not be used</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;void&#125;</span></span></span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">Internal</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">enabledElement, invalidated = <span class="literal">false</span></span>) </span>&#123;</span><br><span class="line">  enabledElement.needsRedraw = <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">if</span> (invalidated) &#123;</span><br><span class="line">    enabledElement.invalid = <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>内部API函数，用于向给定的启用元素绘制图像</p>
+<p><strong>enable.js</strong></p>
+<p>needsRedraw 改变后，在渲染循环中触发重新渲染</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (enabledElement.needsRedraw &amp;&amp; hasImageOrLayers(enabledElement)) &#123;</span><br><span class="line">  drawImageSync(enabledElement, enabledElement.invalid);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="2-1-2-drawImageSync"><a href="#2-1-2-drawImageSync" class="headerlink" title="2.1.2 drawImageSync"></a>2.1.2 drawImageSync</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Draw an image to a given enabled element synchronously</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;EnabledElement&#125;</span> </span>enabledElement An enabled element to draw into</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Boolean&#125;</span> <span class="variable">invalidated</span></span> - true if pixel data has been invalidated and cached rendering should not be used</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;void&#125;</span></span></span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">Internal</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">enabledElement, invalidated</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> image = enabledElement.image;</span><br><span class="line">  <span class="keyword">const</span> element = enabledElement.element;</span><br><span class="line">  <span class="keyword">const</span> layers = enabledElement.layers || [];</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check if enabledElement can be redrawn</span></span><br><span class="line">  <span class="keyword">if</span> (!enabledElement.canvas || !(enabledElement.image || layers.length)) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Start measuring the time needed to draw the image/layers</span></span><br><span class="line">  <span class="keyword">const</span> start = now();</span><br><span class="line"></span><br><span class="line">  image.stats = &#123;</span><br><span class="line">    <span class="attr">lastGetPixelDataTime</span>: -<span class="number">1.0</span>,</span><br><span class="line">    <span class="attr">lastStoredPixelDataToCanvasImageDataTime</span>: -<span class="number">1.0</span>,</span><br><span class="line">    <span class="attr">lastPutImageDataTime</span>: -<span class="number">1.0</span>,</span><br><span class="line">    <span class="attr">lastRenderTime</span>: -<span class="number">1.0</span>,</span><br><span class="line">    <span class="attr">lastLutGenerateTime</span>: -<span class="number">1.0</span></span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (layers &amp;&amp; layers.length) &#123;</span><br><span class="line">    drawCompositeImage(enabledElement, invalidated);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (image) &#123;</span><br><span class="line">    <span class="keyword">let</span> render = image.render;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!render) &#123;</span><br><span class="line">      <span class="keyword">if</span> (enabledElement.viewport.colormap &amp;&amp;</span><br><span class="line">          enabledElement.viewport.colormap !== <span class="string">&#x27;&#x27;</span> &amp;&amp;</span><br><span class="line">          enabledElement.image.labelmap === <span class="literal">true</span>) &#123;</span><br><span class="line">        render = renderLabelMapImage;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (enabledElement.viewport.colormap &amp;&amp; enabledElement.viewport.colormap !== <span class="string">&#x27;&#x27;</span>) &#123;</span><br><span class="line">        render = renderPseudoColorImage;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (image.color) &#123;</span><br><span class="line">        render = renderColorImage;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        render = renderGrayscaleImage;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    render(enabledElement, invalidated);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Calculate how long it took to draw the image/layers</span></span><br><span class="line">  <span class="keyword">const</span> renderTimeInMs = now() - start;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> eventData = &#123;</span><br><span class="line">    <span class="attr">viewport</span>: enabledElement.viewport,</span><br><span class="line">    element,</span><br><span class="line">    image,</span><br><span class="line">    enabledElement,</span><br><span class="line">    <span class="attr">canvasContext</span>: enabledElement.canvas.getContext(<span class="string">&#x27;2d&#x27;</span>),</span><br><span class="line">    renderTimeInMs</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  image.stats.lastRenderTime = renderTimeInMs;</span><br><span class="line"></span><br><span class="line">  enabledElement.invalid = <span class="literal">false</span>;</span><br><span class="line">  enabledElement.needsRedraw = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">  triggerEvent(element, EVENTS.IMAGE_RENDERED, eventData);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>同步绘制图像 到 给定的启用元素</p>
+<h5 id="2-1-3-renderGrayscaleImage-渲染灰度图"><a href="#2-1-3-renderGrayscaleImage-渲染灰度图" class="headerlink" title="2.1.3 renderGrayscaleImage 渲染灰度图"></a>2.1.3 renderGrayscaleImage 渲染灰度图</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * API function to draw a grayscale image to a given enabledElement</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;EnabledElement&#125;</span> </span>enabledElement The Cornerstone Enabled Element to redraw</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Boolean&#125;</span> <span class="variable">invalidated</span></span> - true if pixel data has been invalidated and cached rendering should not be used</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;void&#125;</span></span></span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">rendering</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">renderGrayscaleImage</span> (<span class="params">enabledElement, invalidated</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (enabledElement === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&#x27;drawImage: enabledElement parameter must not be undefined&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> image = enabledElement.image;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (image === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&#x27;drawImage: image must be loaded before it can be drawn&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the canvas context and reset the transform</span></span><br><span class="line">  <span class="keyword">const</span> context = enabledElement.canvas.getContext(<span class="string">&#x27;2d&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  context.setTransform(<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Clear the canvas</span></span><br><span class="line">  context.fillStyle = <span class="string">&#x27;black&#x27;</span>;</span><br><span class="line">  context.fillRect(<span class="number">0</span>, <span class="number">0</span>, enabledElement.canvas.width, enabledElement.canvas.height);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Turn off image smooth/interpolation if pixelReplication is set in the viewport</span></span><br><span class="line">  context.imageSmoothingEnabled = !enabledElement.viewport.pixelReplication;</span><br><span class="line">  context.mozImageSmoothingEnabled = context.imageSmoothingEnabled;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Save the canvas context state and apply the viewport properties</span></span><br><span class="line">  setToPixelCoordinateSystem(enabledElement, context);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> renderCanvas;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (enabledElement.options &amp;&amp; enabledElement.options.renderer &amp;&amp;</span><br><span class="line">    enabledElement.options.renderer.toLowerCase() === <span class="string">&#x27;webgl&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// If this enabled element has the option set for WebGL, we should</span></span><br><span class="line">    <span class="comment">// User it as our renderer.</span></span><br><span class="line">    renderCanvas = webGL.renderer.render(enabledElement);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// If no options are set we will retrieve the renderCanvas through the</span></span><br><span class="line">    <span class="comment">// Normal Canvas rendering path</span></span><br><span class="line">    renderCanvas = getRenderCanvas(enabledElement, image, invalidated);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> sx = enabledElement.viewport.displayedArea.tlhc.x - <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">const</span> sy = enabledElement.viewport.displayedArea.tlhc.y - <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">const</span> width = enabledElement.viewport.displayedArea.brhc.x - sx;</span><br><span class="line">  <span class="keyword">const</span> height = enabledElement.viewport.displayedArea.brhc.y - sy;</span><br><span class="line"></span><br><span class="line">  context.drawImage(renderCanvas, sx, sy, width, height, <span class="number">0</span>, <span class="number">0</span>, width, height);</span><br><span class="line"></span><br><span class="line">  enabledElement.renderingTools = saveLastRendered(enabledElement);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>API函数，用于绘制给定 enable element 的灰度图像</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">context.drawImage(renderCanvas, sx, sy, width, height, <span class="number">0</span>, <span class="number">0</span>, width, height);</span><br></pre></td></tr></table></figure>
+
+<p><strong>CanvasRenderingContext2D.drawImage()</strong></p>
+<p>语法</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> ctx.drawImage(image, dx, dy);</span><br><span class="line"><span class="keyword">void</span> ctx.drawImage(image, dx, dy, dWidth, dHeight);</span><br><span class="line"><span class="keyword">void</span> ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);</span><br></pre></td></tr></table></figure>
+
+<p>参考： <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage">https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage</a></p>
+<h5 id="2-1-4-getRenderCanvas-获取渲染canvas"><a href="#2-1-4-getRenderCanvas-获取渲染canvas" class="headerlink" title="2.1.4 getRenderCanvas 获取渲染canvas"></a>2.1.4 getRenderCanvas 获取渲染canvas</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns an appropriate canvas to render the Image. If the canvas available in the cache is appropriate</span></span><br><span class="line"><span class="comment"> * it is returned, otherwise adjustments are made. It also sets the color transfer functions.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Object&#125;</span> </span>enabledElement The cornerstone enabled element</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Object&#125;</span> </span>image The image to be rendered</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Boolean&#125;</span> </span>invalidated Is pixel data valid</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Boolean&#125;</span> </span>[useAlphaChannel = true] Will an alpha channel be used</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;HTMLCanvasElement&#125;</span> </span>An appropriate canvas for rendering the image</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">rendering</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getRenderCanvas</span> (<span class="params">enabledElement, image, invalidated, useAlphaChannel = <span class="literal">true</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> canvasWasColor = enabledElement.renderingTools.lastRenderedIsColor === <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!enabledElement.renderingTools.renderCanvas || canvasWasColor) &#123;</span><br><span class="line">    enabledElement.renderingTools.renderCanvas = <span class="built_in">document</span>.createElement(<span class="string">&#x27;canvas&#x27;</span>);</span><br><span class="line">    initializeRenderCanvas(enabledElement, image);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> renderCanvas = enabledElement.renderingTools.renderCanvas;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (doesImageNeedToBeRendered(enabledElement, image) === <span class="literal">false</span> &amp;&amp; invalidated !== <span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> renderCanvas;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// If our render canvas does not match the size of this image reset it</span></span><br><span class="line">  <span class="comment">// <span class="doctag">NOTE:</span> This might be inefficient if we are updating multiple images of different</span></span><br><span class="line">  <span class="comment">// Sizes frequently.</span></span><br><span class="line">  <span class="keyword">if</span> (renderCanvas.width !== image.width || renderCanvas.height !== image.height) &#123;</span><br><span class="line">    initializeRenderCanvas(enabledElement, image);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the lut to use</span></span><br><span class="line">  <span class="keyword">let</span> start = now();</span><br><span class="line">  <span class="keyword">const</span> lut = getLut(image, enabledElement.viewport, invalidated);</span><br><span class="line"></span><br><span class="line">  image.stats = image.stats || &#123;&#125;;</span><br><span class="line">  image.stats.lastLutGenerateTime = now() - start;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> renderCanvasData = enabledElement.renderingTools.renderCanvasData;</span><br><span class="line">  <span class="keyword">const</span> renderCanvasContext = enabledElement.renderingTools.renderCanvasContext;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Gray scale image - apply the lut and put the resulting image onto the render canvas</span></span><br><span class="line">  <span class="keyword">if</span> (useAlphaChannel) &#123;</span><br><span class="line">    storedPixelDataToCanvasImageData(image, lut, renderCanvasData.data);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    storedPixelDataToCanvasImageDataRGBA(image, lut, renderCanvasData.data);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  start = now();</span><br><span class="line">  renderCanvasContext.putImageData(renderCanvasData, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">  image.stats.lastPutImageDataTime = now() - start;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> renderCanvas;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>返回一个适当的 canvas 来渲染图像。如果缓存中可用的 canvas 合适</p>
+<p>返回该值，否则将进行调整。它还设置了 色彩转换方程。</p>
+<h5 id="2-1-5-（核心！）storedPixelDataToCanvasImageDataRGBA"><a href="#2-1-5-（核心！）storedPixelDataToCanvasImageDataRGBA" class="headerlink" title="2.1.5 （核心！）storedPixelDataToCanvasImageDataRGBA"></a>2.1.5 （核心！）storedPixelDataToCanvasImageDataRGBA</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This function transforms stored pixel values into a canvas image data buffer</span></span><br><span class="line"><span class="comment"> * by using a LUT.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Image&#125;</span> </span>image A Cornerstone Image Object</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Array&#125;</span> </span>lut Lookup table array</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Uint8ClampedArray&#125;</span> </span>canvasImageDataData canvasImageData.data buffer filled with white pixels</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;void&#125;</span></span></span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">Internal</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">image, lut, canvasImageDataData</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> start = now();</span><br><span class="line">  <span class="keyword">const</span> pixelData = image.getPixelData();</span><br><span class="line"></span><br><span class="line">  image.stats.lastGetPixelDataTime = now() - start;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> numPixels = pixelData.length;</span><br><span class="line">  <span class="keyword">const</span> minPixelValue = image.minPixelValue;</span><br><span class="line">  <span class="keyword">let</span> canvasImageDataIndex = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">let</span> storedPixelDataIndex = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">let</span> pixelValue;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// <span class="doctag">NOTE:</span> As of Nov 2014, most javascript engines have lower performance when indexing negative indexes.</span></span><br><span class="line">  <span class="comment">// We have a special code path for this case that improves performance.  Thanks to @jpambrun for this enhancement</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// Added two paths (Int16Array, Uint16Array) to avoid polymorphic deoptimization in chrome.</span></span><br><span class="line">  start = now();</span><br><span class="line">  <span class="keyword">if</span> (pixelData <span class="keyword">instanceof</span> <span class="built_in">Int16Array</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (minPixelValue &lt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">while</span> (storedPixelDataIndex &lt; numPixels) &#123;</span><br><span class="line">        pixelValue = lut[pixelData[storedPixelDataIndex++] + (-minPixelValue)];</span><br><span class="line">        canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">        canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">        canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">        canvasImageDataData[canvasImageDataIndex++] = <span class="number">255</span>; <span class="comment">// Alpha</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">while</span> (storedPixelDataIndex &lt; numPixels) &#123;</span><br><span class="line">        pixelValue = lut[pixelData[storedPixelDataIndex++]];</span><br><span class="line">        canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">        canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">        canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">        canvasImageDataData[canvasImageDataIndex++] = <span class="number">255</span>; <span class="comment">// Alpha</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pixelData <span class="keyword">instanceof</span> <span class="built_in">Uint16Array</span>) &#123;</span><br><span class="line">    <span class="keyword">while</span> (storedPixelDataIndex &lt; numPixels) &#123;</span><br><span class="line">      pixelValue = lut[pixelData[storedPixelDataIndex++]];</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = <span class="number">255</span>; <span class="comment">// Alpha</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (minPixelValue &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">while</span> (storedPixelDataIndex &lt; numPixels) &#123;</span><br><span class="line">      pixelValue = lut[pixelData[storedPixelDataIndex++] + (-minPixelValue)];</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = <span class="number">255</span>; <span class="comment">// Alpha</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">while</span> (storedPixelDataIndex &lt; numPixels) &#123;</span><br><span class="line">      pixelValue = lut[pixelData[storedPixelDataIndex++]];</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = pixelValue;</span><br><span class="line">      canvasImageDataData[canvasImageDataIndex++] = <span class="number">255</span>; <span class="comment">// Alpha</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  image.stats.lastStoredPixelDataToCanvasImageDataTime = now() - start;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个函数将存储的 像素值 转换 为画布图像数据缓冲区</p>
+<p>这个地方就是将uint16 或者 int16的数据转换成 0-255 范围内的数据，即生成一张可以被显示的图片。</p>
+<p>我们观察到，这段代码中，把每个像素点的Alpha通道写成255，另外的RGB通道统一写成 pixelvalue。</p>
+<p><strong>这个 pixelvalue 是通过 lut 这个数组来获取到，lut这个数组是之前写在缓存中的一个数组，相比每次去计算像素值，这样做大大提高了程序的执行效率。</strong></p>
+<p>这里有一段作者写的注释，翻译过来是：</p>
+<p>注:截至2014年11月，大多数javascript引擎在 索引 负索引 时性能较低。</p>
+<p>对于这种情况，我们有一个特殊的代码路径来提高性能。感谢@jpambrun提供的这种增强</p>
+<p>增加了两个路径(Int16Array, Uint16Array)，以避免在chrome的多态反优化。</p>
+<h3 id="3-生成lut-数组"><a href="#3-生成lut-数组" class="headerlink" title="3 生成lut 数组"></a>3 生成lut 数组</h3><p>在 <strong>getRenderCanvas</strong> 方法中</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Get the lut to use</span></span><br><span class="line">  <span class="keyword">let</span> start = now();</span><br><span class="line">  <span class="keyword">const</span> lut = getLut(image, enabledElement.viewport, invalidated);</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-1-getLut"><a href="#3-1-getLut" class="headerlink" title="3.1 getLut"></a>3.1 getLut</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Retrieve or generate a LUT Array for an Image and Viewport</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Image&#125;</span> </span>image An Image Object</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Viewport&#125;</span> </span>viewport An Viewport Object</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Boolean&#125;</span> </span>invalidated Whether or not the LUT data has been invalidated</span></span><br><span class="line"><span class="comment"> * (e.g. by a change to the windowWidth, windowCenter, or invert viewport parameters).</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return <span class="type">&#123;Uint8ClampedArray&#125;</span> </span>LUT Array</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">rendering</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">image, viewport, invalidated</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// If we have a cached lut and it has the right values, return it immediately</span></span><br><span class="line">  <span class="keyword">if</span> (image.cachedLut !== <span class="literal">undefined</span> &amp;&amp;</span><br><span class="line">    image.cachedLut.windowCenter === viewport.voi.windowCenter &amp;&amp;</span><br><span class="line">    image.cachedLut.windowWidth === viewport.voi.windowWidth &amp;&amp;</span><br><span class="line">    lutMatches(image.cachedLut.modalityLUT, viewport.modalityLUT) &amp;&amp;</span><br><span class="line">    lutMatches(image.cachedLut.voiLUT, viewport.voiLUT) &amp;&amp;</span><br><span class="line">    image.cachedLut.invert === viewport.invert &amp;&amp;</span><br><span class="line">    invalidated !== <span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> image.cachedLut.lutArray;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  computeAutoVoi(viewport, image);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Lut is invalid or not present, regenerate it and cache it</span></span><br><span class="line">  generateLut(image, viewport.voi.windowWidth, viewport.voi.windowCenter, viewport.invert, viewport.modalityLUT, viewport.voiLUT);</span><br><span class="line"></span><br><span class="line">  image.cachedLut.windowWidth = viewport.voi.windowWidth;</span><br><span class="line">  image.cachedLut.windowCenter = viewport.voi.windowCenter;</span><br><span class="line">  image.cachedLut.invert = viewport.invert;</span><br><span class="line">  image.cachedLut.voiLUT = viewport.voiLUT;</span><br><span class="line">  image.cachedLut.modalityLUT = viewport.modalityLUT;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> image.cachedLut.lutArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>检索或生成 图像 和 Viewport 的LUT数组</p>
+<p><strong>computeAutoVoi</strong> 这个方法用来生成 窗宽 和 窗位</p>
+<h4 id="3-2-（核心！）generateLut"><a href="#3-2-（核心！）generateLut" class="headerlink" title="3.2 （核心！）generateLut"></a>3.2 （核心！）generateLut</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Creates a LUT used while rendering to convert stored pixel values to</span></span><br><span class="line"><span class="comment"> * display pixels</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Image&#125;</span> </span>image A Cornerstone Image Object</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Number&#125;</span> </span>windowWidth The Window Width</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Number&#125;</span> </span>windowCenter The Window Center</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Boolean&#125;</span> </span>invert A boolean describing whether or not the image has been inverted</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Array&#125;</span> </span>[modalityLUT] A modality Lookup Table</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;Array&#125;</span> </span>[voiLUT] A Volume of Interest Lookup Table</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;Uint8ClampedArray&#125;</span> </span>A lookup table to apply to the image</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@memberof <span class="variable">Internal</span></span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">image, windowWidth, windowCenter, invert, modalityLUT, voiLUT</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> maxPixelValue = image.maxPixelValue;</span><br><span class="line">  <span class="keyword">const</span> minPixelValue = image.minPixelValue;</span><br><span class="line">  <span class="keyword">const</span> offset = <span class="built_in">Math</span>.min(minPixelValue, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (image.cachedLut === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> length = maxPixelValue - offset + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    image.cachedLut = &#123;&#125;;</span><br><span class="line">    image.cachedLut.lutArray = <span class="keyword">new</span> <span class="built_in">Uint8ClampedArray</span>(length);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> lut = image.cachedLut.lutArray;</span><br><span class="line">  <span class="keyword">const</span> mlutfn = getModalityLUT(image.slope, image.intercept, modalityLUT);</span><br><span class="line">  <span class="keyword">const</span> vlutfn = getVOILUT(windowWidth, windowCenter, voiLUT);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (invert === <span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> storedValue = minPixelValue; storedValue &lt;= maxPixelValue; storedValue++) &#123;</span><br><span class="line">      lut[storedValue + (-offset)] = <span class="number">255</span> - vlutfn(mlutfn(storedValue));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> storedValue = minPixelValue; storedValue &lt;= maxPixelValue; storedValue++) &#123;</span><br><span class="line">      lut[storedValue + (-offset)] = vlutfn(mlutfn(storedValue));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> lut;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从最小的像素一直循环到最大的像素，生成一个映射表LUT</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总而言之，在cornerstone中，为了优化生成图片的生成速度，建立一个数据值对应灰度值的映射表LUT，每次靠查表来获取像素的值。</p>
+<p>未来的影像系统的版本考虑要在这个方向上进行优化。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag"># 医学影像处理</a>
+              <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
+              <a href="/tags/vtk-js/" rel="tag"># vtk.js</a>
+              <a href="/tags/React/" rel="tag"># React</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021-08-19-%E5%8D%83%E4%BC%8F%E5%B7%A5%E4%BD%9C%E5%AE%A4%E5%87%BA%E5%93%81%E3%80%8A%E7%94%B2%E5%8D%88%E6%88%98%E4%BA%89%E5%8D%87%E9%BE%99%E4%B8%8E%E6%97%AD%E6%97%A5%E7%AC%AC%E4%BA%8C%E7%89%88%E3%80%8B%E5%85%B5%E6%A3%8B%E7%AE%80%E8%AF%84-%E6%8E%A8%E6%BC%94/" rel="prev" title="千伏工作室出品 《甲午战争 升龙与旭日 第二版》兵棋简评+推演">
+      <i class="fa fa-chevron-left"></i> 千伏工作室出品 《甲午战争 升龙与旭日 第二版》兵棋简评+推演
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#cornerstone%E4%BD%BF%E7%94%A8%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">cornerstone使用例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%B2%E6%9F%93%E5%8D%95%E5%BC%A0DICOM%E6%95%B0%E6%8D%AE%E7%9A%84%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.</span> <span class="nav-text">渲染单张DICOM数据的核心代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cornerstone-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">cornerstone 源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-loadImage"><span class="nav-number">2.1.</span> <span class="nav-text">1 loadImage</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-loadImageFromImageLoader"><span class="nav-number">2.1.1.</span> <span class="nav-text">1.1 loadImageFromImageLoader</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-displayImage"><span class="nav-number">2.2.</span> <span class="nav-text">2 displayImage</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%A0%B8%E5%BF%83%E6%96%B9%E6%B3%95-updateImage"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1 核心方法 updateImage</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-1-drawImage"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">2.1.1 drawImage</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-2-drawImageSync"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">2.1.2 drawImageSync</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-3-renderGrayscaleImage-%E6%B8%B2%E6%9F%93%E7%81%B0%E5%BA%A6%E5%9B%BE"><span class="nav-number">2.2.1.3.</span> <span class="nav-text">2.1.3 renderGrayscaleImage 渲染灰度图</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-4-getRenderCanvas-%E8%8E%B7%E5%8F%96%E6%B8%B2%E6%9F%93canvas"><span class="nav-number">2.2.1.4.</span> <span class="nav-text">2.1.4 getRenderCanvas 获取渲染canvas</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-5-%EF%BC%88%E6%A0%B8%E5%BF%83%EF%BC%81%EF%BC%89storedPixelDataToCanvasImageDataRGBA"><span class="nav-number">2.2.1.5.</span> <span class="nav-text">2.1.5 （核心！）storedPixelDataToCanvasImageDataRGBA</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%94%9F%E6%88%90lut-%E6%95%B0%E7%BB%84"><span class="nav-number">2.3.</span> <span class="nav-text">3 生成lut 数组</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-getLut"><span class="nav-number">2.3.1.</span> <span class="nav-text">3.1 getLut</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%EF%BC%88%E6%A0%B8%E5%BF%83%EF%BC%81%EF%BC%89generateLut"><span class="nav-number">2.3.2.</span> <span class="nav-text">3.2 （核心！）generateLut</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="alexiusll"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">alexiusll</p>
+  <div class="site-description" itemprop="description">alexiusll 的博客</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alexiusll" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;alexiusll" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/32825146" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;32825146" rel="noopener" target="_blank"><i class="fas fa-bold fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alexiusll</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">125k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:54</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'taK3ClN74qMXMOLjbwinsFWY-gzGzoHsz',
+      appKey     : '0TM4FFbzI0dKrjeorfF42vvx',
+      placeholder: "留下你的评论吧!",
+      avatar     : 'wavatar',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
