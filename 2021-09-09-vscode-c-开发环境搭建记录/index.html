@@ -21,18 +21,24 @@
     var CONFIG = {"hostname":"alexiusll.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="​         ​        最近感觉还是需要学习一下C++，之前虽然已经搭建了一个vscode的c++运行环境，但是当时的搭建过程都没有记录下来，现在已经不知道该怎么用了，所以现在重新写一个c++的搭建过程。">
+  <meta name="description" content="​         ​        最近感觉还是需要学习一下C++，之前虽然已经搭建了一个vscode的c++运行环境，但是当时的搭建过程都没有记录下来，现在已经不知道该怎么用了，所以现在重新写一个c++的搭建过程。 ​        本文基本都是对知乎用户回答的整理和归纳，感谢 谭九鼎">
 <meta property="og:type" content="article">
 <meta property="og:title" content="vscode c++开发环境搭建记录">
 <meta property="og:url" content="https://alexiusll.github.io/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/index.html">
 <meta property="og:site_name" content="alexiusll 的博客">
-<meta property="og:description" content="​         ​        最近感觉还是需要学习一下C++，之前虽然已经搭建了一个vscode的c++运行环境，但是当时的搭建过程都没有记录下来，现在已经不知道该怎么用了，所以现在重新写一个c++的搭建过程。">
+<meta property="og:description" content="​         ​        最近感觉还是需要学习一下C++，之前虽然已经搭建了一个vscode的c++运行环境，但是当时的搭建过程都没有记录下来，现在已经不知道该怎么用了，所以现在重新写一个c++的搭建过程。 ​        本文基本都是对知乎用户回答的整理和归纳，感谢 谭九鼎">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alexiusll.github.io/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210909163320476.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210909163728323.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210909165315058.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210909165656146.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210910145014006.png">
 <meta property="article:published_time" content="2021-09-09T07:52:57.000Z">
-<meta property="article:modified_time" content="2021-09-09T09:05:54.585Z">
+<meta property="article:modified_time" content="2021-09-10T08:32:35.745Z">
 <meta property="article:author" content="alexiusll">
 <meta property="article:tag" content="c++">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://alexiusll.github.io/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210909163320476.png">
 
 <link rel="canonical" href="https://alexiusll.github.io/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/">
 
@@ -233,14 +239,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>92</span>
+              <span>8.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>7 分钟</span>
             </span>
 
         </div>
@@ -254,10 +260,108 @@
       
         <p>​        </p>
 <p>​        最近感觉还是需要学习一下C++，之前虽然已经搭建了一个vscode的c++运行环境，但是当时的搭建过程都没有记录下来，现在已经不知道该怎么用了，所以现在重新写一个c++的搭建过程。</p>
+<p>​        本文基本都是对知乎用户回答的整理和归纳，感谢 <a target="_blank" rel="noopener" href="https://www.zhihu.com/people/tan-jiu-ding">谭九鼎</a></p>
 <span id="more"></span>
 
+<h2 id="step-1-GCC环境的准备"><a href="#step-1-GCC环境的准备" class="headerlink" title="step.1 GCC环境的准备"></a>step.1 GCC环境的准备</h2><h3 id="1-1-下载编译器"><a href="#1-1-下载编译器" class="headerlink" title="1.1 下载编译器"></a>1.1 下载编译器</h3><p>MinGW-w64 - for 32 and 64 bit Windows</p>
+<p><a target="_blank" rel="noopener" href="https://sourceforge.net/projects/mingw-w64/files/">https://sourceforge.net/projects/mingw-w64/files/</a></p>
+<p>往下稍微翻一下，选最新版本中的x86_64-posix-seh。最好不要用 Download Latest Version。</p>
+<blockquote>
+<p>​        MinGW是gcc在Windows下的移植，gcc是世界上最流行的C/C++编译器组合。但gcc这个名字也指编译C语言的那个程序，g++才是C++编译器。即gcc程序和g++程序包含在gcc套件以及MinGW里，当只说gcc时要根据语境自己区分。</p>
+<p>​        其实MinGW和MinGW-w64只是名字像，它们是两个不同的项目。为了方便，本文中的MinGW指的其实都是MinGW-w64。MinGW还活着，但只能产生32位程序。</p>
+<p>​        现在MinGW-w64很久没有发布官方构建了，代码其实已经更新到了9.2.0，所以也可以考虑用基于它的TDM-GCC64。别下旧版，那是很久以前的，2020年发布了新版。</p>
+</blockquote>
+<p><strong>我选择的版本：</strong></p>
+<p>x86_64-8.1.0-release-posix-seh-rt_v6-rev0</p>
+<p><strong>解压的目录：</strong></p>
+<p>C:\ENV\mingw64</p>
+<p><strong>设置环境变量：</strong></p>
+<p>C:\ENV\mingw64\bin</p>
+<h3 id="1-2-验证是否成功"><a href="#1-2-验证是否成功" class="headerlink" title="1.2 验证是否成功"></a>1.2 验证是否成功</h3><p>按Win+R，运行cmd（不要跳这一步），输入gcc</p>
+<p>输gcc -v可以显示出gcc的版本。</p>
+<p><img src="/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210909163320476.png" alt="cmd"></p>
+<h2 id="step-2-配置vscode环境"><a href="#step-2-配置vscode环境" class="headerlink" title="step.2 配置vscode环境"></a>step.2 配置vscode环境</h2><h3 id="2-1-安装插件"><a href="#2-1-安装插件" class="headerlink" title="2.1 安装插件"></a>2.1 安装插件</h3><p><strong>必须安装的扩展</strong></p>
+<ul>
+<li>C/C++：又名 cpptools，提供Debug和Format功能</li>
+<li>Code Runner：右键即可编译运行单文件，很方便；但无法Debug</li>
+</ul>
+<p><strong>其他可选扩展</strong></p>
+<ul>
+<li>Bracket Pair Colorizer 2：彩虹花括号</li>
+<li>One Dark Pro：大概是VS Code安装量最高的主题</li>
+</ul>
+<p><strong>不建议/不需要装的扩展</strong></p>
+<ul>
+<li>GBKtoUTF8：把GBK编码的文档转换成UTF8编码的。此扩展很久没有更新了，也有严重的bug</li>
+<li>C++ Intellisense：用的是gtags，效果不咋样</li>
+<li>Include     Autocomplete：提供头文件名字的补全，现在cpptools和vscode-clangd都已经自带这个功能了</li>
+<li>C/C++     Snippets：Snippets即重用代码块，效果自己百度；这个扩展安装量虽高，不过个人感觉用处实在不大，cpptools和clangd也自带一些；你也可以选择其他的Snippets扩展甚至自定义</li>
+</ul>
+<p><img src="/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210909163728323.png" alt="插件"></p>
+<h3 id="2-2-修改配置文件-launch-json"><a href="#2-2-修改配置文件-launch-json" class="headerlink" title="2.2 修改配置文件 launch.json"></a>2.2 修改配置文件 launch.json</h3><p><strong>参考链接：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/cpp/launch-json-reference">https://code.visualstudio.com/docs/cpp/launch-json-reference</a></p>
+<p>externalConsole可根据自己喜好修改；</p>
+<p>cwd 默认设置为 ${workspaceFolder} 可以是程序运行时的相对路径，如有需要可以改为${fileDirname}（感谢@xhx）；</p>
+<p>type和request不变色是正常现象。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;version&quot;</span>: <span class="string">&quot;0.2.0&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;configurations&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;(gdb) Launch&quot;</span>, <span class="comment">// 配置名称，将会在启动配置的下拉菜单中显示</span></span><br><span class="line">      <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;cppdbg&quot;</span>, <span class="comment">// 配置类型，对于C/C++可认为此处只能是cppdbg，由cpptools提供；不同编程语言不同</span></span><br><span class="line">      <span class="attr">&quot;request&quot;</span>: <span class="string">&quot;launch&quot;</span>, <span class="comment">// 可以为launch（启动）或attach（附加）</span></span><br><span class="line">      <span class="attr">&quot;program&quot;</span>: <span class="string">&quot;$&#123;fileDirname&#125;/$&#123;fileBasenameNoExtension&#125;.exe&quot;</span>, <span class="comment">// 将要进行调试的程序的路径</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span>: [], <span class="comment">// 程序调试时传递给程序的命令行参数，一般设为空</span></span><br><span class="line">      <span class="attr">&quot;stopAtEntry&quot;</span>: <span class="literal">false</span>, <span class="comment">// 设为true时程序将暂停在程序入口处，相当于在main上打断点</span></span><br><span class="line">      <span class="attr">&quot;cwd&quot;</span>: <span class="string">&quot;$&#123;workspaceFolder&#125;&quot;</span>, <span class="comment">// 调试程序时的工作目录，此为工作区文件夹；改成$&#123;fileDirname&#125;可变为文件所在目录</span></span><br><span class="line">      <span class="attr">&quot;environment&quot;</span>: [], <span class="comment">// 环境变量</span></span><br><span class="line">      <span class="attr">&quot;externalConsole&quot;</span>: <span class="literal">true</span>, <span class="comment">// 使用单独的cmd窗口，与其它IDE一致；为false时使用内置终端</span></span><br><span class="line">      <span class="attr">&quot;internalConsoleOptions&quot;</span>: <span class="string">&quot;neverOpen&quot;</span>, <span class="comment">// 如果不设为neverOpen，调试时会跳到“调试控制台”选项卡，你应该不需要对gdb手动输命令吧？</span></span><br><span class="line">      <span class="attr">&quot;MIMode&quot;</span>: <span class="string">&quot;gdb&quot;</span>, <span class="comment">// 指定连接的调试器，可以为gdb或lldb。但我没试过lldb</span></span><br><span class="line">      <span class="attr">&quot;miDebuggerPath&quot;</span>: <span class="string">&quot;gdb.exe&quot;</span>, <span class="comment">// 调试器路径，Windows下后缀不能省略，Linux下则不要</span></span><br><span class="line">      <span class="attr">&quot;setupCommands&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="comment">// 模板自带，好像可以更好地显示STL容器的内容，具体作用自行Google</span></span><br><span class="line">          <span class="attr">&quot;description&quot;</span>: <span class="string">&quot;Enable pretty-printing for gdb&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;text&quot;</span>: <span class="string">&quot;-enable-pretty-printing&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;ignoreFailures&quot;</span>: <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">&quot;preLaunchTask&quot;</span>: <span class="string">&quot;Compile&quot;</span> <span class="comment">// 调试前执行的任务，一般为编译程序。与tasks.json的label相对应</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
+
+<h3 id="2-3-修改配置文件-Tasks-json"><a href="#2-3-修改配置文件-Tasks-json" class="headerlink" title="2.3 修改配置文件 Tasks.json"></a>2.3 修改配置文件 Tasks.json</h3><p><strong>参考链接：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/editor/tasks">https://code.visualstudio.com/docs/editor/tasks</a></p>
+<p>如果是**编写C++**，编译器需改成g++。</p>
+<p>MinGW的-std=c++17好像有问题，最好至多到c++14，但好像默认用的就是合适的，c语言版本也超过了c11，所以就别加-std了。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;version&quot;</span>: <span class="string">&quot;2.0.0&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;tasks&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;label&quot;</span>: <span class="string">&quot;Compile&quot;</span>, <span class="comment">// 任务名称，与launch.json的preLaunchTask相对应</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span>: <span class="string">&quot;g++&quot;</span>, <span class="comment">// 要使用的编译器，C++用g++</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span>: [</span><br><span class="line">        <span class="string">&quot;$&#123;file&#125;&quot;</span>,</span><br><span class="line">        <span class="string">&quot;-o&quot;</span>, <span class="comment">// 指定输出文件名，不加该参数则默认输出a.exe，Linux下默认a.out</span></span><br><span class="line">        <span class="string">&quot;$&#123;fileDirname&#125;/$&#123;fileBasenameNoExtension&#125;.exe&quot;</span>,</span><br><span class="line">        <span class="string">&quot;-g&quot;</span>, <span class="comment">// 生成和调试有关的信息</span></span><br><span class="line">        <span class="string">&quot;-m64&quot;</span>, <span class="comment">// 不知为何有时会生成16位程序而无法运行，此条可强制生成64位的</span></span><br><span class="line">        <span class="string">&quot;-Wall&quot;</span>, <span class="comment">// 开启额外警告</span></span><br><span class="line">        <span class="string">&quot;-static-libgcc&quot;</span>, <span class="comment">// 静态链接libgcc，一般都会加上</span></span><br><span class="line">        <span class="string">&quot;-fexec-charset=GBK&quot;</span>, <span class="comment">// 生成的程序使用GBK编码，不加这条会导致Win下输出中文乱码；繁体系统改成BIG5</span></span><br><span class="line">        <span class="string">&quot;-D__USE_MINGW_ANSI_STDIO&quot;</span> <span class="comment">// 用MinGW写C时留着，否则不需要，用于支持printf的%zd和%Lf等</span></span><br><span class="line">      ], <span class="comment">// 编译的命令，其实相当于VSC帮你在终端中输了这些东西</span></span><br><span class="line">      <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;process&quot;</span>, <span class="comment">// process是把预定义变量和转义解析后直接全部传给command；shell相当于先打开shell再输入命令，所以args还会经过shell再解析一遍</span></span><br><span class="line">      <span class="attr">&quot;group&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;kind&quot;</span>: <span class="string">&quot;build&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;isDefault&quot;</span>: <span class="literal">true</span> <span class="comment">// 不为true时ctrl shift B就要手动选择了</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">&quot;presentation&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;echo&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">&quot;reveal&quot;</span>: <span class="string">&quot;always&quot;</span>, <span class="comment">// 执行任务时是否跳转到终端面板，可以为always，silent，never。具体参见VSC的文档，即使设为never，手动点进去还是可以看到</span></span><br><span class="line">        <span class="attr">&quot;focus&quot;</span>: <span class="literal">false</span>, <span class="comment">// 设为true后可以使执行task时焦点聚集在终端，但对编译C/C++来说，设为true没有意义</span></span><br><span class="line">        <span class="attr">&quot;panel&quot;</span>: <span class="string">&quot;shared&quot;</span> <span class="comment">// 不同的文件的编译信息共享一个终端面板</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">&quot;problemMatcher&quot;</span>: <span class="string">&quot;$gcc&quot;</span> <span class="comment">// 捕捉编译时终端里的报错信息到问题面板中，修改代码后需要重新编译才会再次触发</span></span><br><span class="line">      <span class="comment">// 本来有Lint，再开problemMatcher就有双重报错，但MinGW的Lint效果实在太差了；用Clangd可以注释掉</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-4-修改配置文件-settings-json"><a href="#2-4-修改配置文件-settings-json" class="headerlink" title="2.4 修改配置文件 settings.json"></a>2.4 修改配置文件 settings.json</h3><p>把这个文件里的东西放到“用户设置”里可以覆盖全局设置，否则只在当前工作区才有效。这两点各有自己的优势。</p>
+<p>Code Runner的命令行和某些选项可以根据自己的需要在此处修改，想自定义或者想知道是什么意思还是参见此扩展的文档和百度gcc使用教程。如果终端用的是cmd（<strong>Win7</strong>默认）需要改用注释掉的，或者把<code>terminal.integrated.shell.windows</code>改为PowerShell；Win10默认就是PS就不用改。</p>
+<p>感谢 <a target="_blank" rel="noopener" href="https://www.zhihu.com/people/e011194994d3415968b3886ade2b588c">@Wellin Boss</a> 提到的snippetSuggestions；不过用top有时还是有点问题的，所以改成可选。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="comment">// 编译器的配置</span></span><br><span class="line">  <span class="attr">&quot;files.defaultLanguage&quot;</span>: <span class="string">&quot;cpp&quot;</span>, <span class="comment">// ctrl+N新建文件后默认的语言</span></span><br><span class="line">  <span class="attr">&quot;editor.formatOnType&quot;</span>: <span class="literal">true</span>, <span class="comment">// 输入分号(C/C++的语句结束标识)后自动格式化当前这一行的代码</span></span><br><span class="line">  <span class="attr">&quot;editor.suggest.snippetsPreventQuickSuggestions&quot;</span>: <span class="literal">false</span>, <span class="comment">// clangd的snippets有很多的跳转点，不用这个就必须手动触发Intellisense了</span></span><br><span class="line">  <span class="comment">// &quot;editor.acceptSuggestionOnEnter&quot;: &quot;off&quot;, // 我个人的习惯，按回车时一定是真正的换行，只有tab才会接受Intellisense</span></span><br><span class="line">  <span class="comment">// &quot;editor.snippetSuggestions&quot;: &quot;top&quot;, // （可选）snippets显示在补全列表顶端，默认是inline</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// &quot;terminal.integrated.shell.windows&quot;: &quot;PowerShell&quot;,</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// code-runner 的配置：</span></span><br><span class="line">  <span class="attr">&quot;code-runner.runInTerminal&quot;</span>: <span class="literal">true</span>, <span class="comment">// 设置成false会在“输出”中输出，无法输入</span></span><br><span class="line">  <span class="attr">&quot;code-runner.executorMap&quot;</span>: &#123;</span><br><span class="line">    <span class="comment">// &quot;c&quot;: &quot;gcc &#x27;$fileName&#x27; -o &#x27;$fileNameWithoutExt.exe&#x27; -Wall -O2 -m64 -lm -static-libgcc -fexec-charset=GBK -D__USE_MINGW_ANSI_STDIO &amp;&amp; &amp;&#x27;./$fileNameWithoutExt.exe&#x27;&quot;,</span></span><br><span class="line">    <span class="comment">// &quot;cpp&quot;: &quot;g++ &#x27;$fileName&#x27; -o &#x27;$fileNameWithoutExt.exe&#x27; -Wall -O2 -m64 -static-libgcc -fexec-charset=GBK &amp;&amp; &amp;&#x27;./$fileNameWithoutExt.exe&#x27;&quot;</span></span><br><span class="line">    <span class="attr">&quot;c&quot;</span>: <span class="string">&quot;gcc $fileName -o $fileNameWithoutExt.exe -Wall -O2 -m64 -lm -static-libgcc -fexec-charset=GBK -D__USE_MINGW_ANSI_STDIO &amp;&amp; $dir$fileNameWithoutExt.exe&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;cpp&quot;</span>: <span class="string">&quot;g++ $fileName -o $fileNameWithoutExt.exe -Wall -O2 -m64 -static-libgcc -fexec-charset=GBK &amp;&amp; $dir$fileNameWithoutExt.exe&quot;</span></span><br><span class="line">  &#125;, <span class="comment">// 右键run code时运行的命令；未注释的仅适用于PowerShell（Win10默认）和pwsh，文件名中有空格也可以编译运行；注释掉的适用于cmd（win7默认）、PS和bash，但文件名中有空格时无法运行</span></span><br><span class="line">  <span class="attr">&quot;code-runner.saveFileBeforeRun&quot;</span>: <span class="literal">true</span>, <span class="comment">// run code前保存</span></span><br><span class="line">  <span class="attr">&quot;code-runner.preserveFocus&quot;</span>: <span class="literal">true</span>, <span class="comment">// 若为false，run code后光标会聚焦到终端上。如果需要频繁输入数据可设为false</span></span><br><span class="line">  <span class="attr">&quot;code-runner.clearPreviousOutput&quot;</span>: <span class="literal">false</span>, <span class="comment">// 每次run code前清空属于code runner的终端消息，默认false</span></span><br><span class="line">  <span class="attr">&quot;code-runner.ignoreSelection&quot;</span>: <span class="literal">true</span>, <span class="comment">// 默认为false，效果是鼠标选中一块代码后可以单独执行，但C是编译型语言，不适合这样用</span></span><br><span class="line">  <span class="attr">&quot;code-runner.fileDirectoryAsCwd&quot;</span>: <span class="literal">true</span>, <span class="comment">// 将code runner终端的工作目录切换到文件目录再运行，对依赖cwd的程序产生影响；如果为false，executorMap要加cd $dir</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">&quot;C_Cpp.clang_format_sortIncludes&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;files.associations&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;iostream&quot;</span>: <span class="string">&quot;cpp&quot;</span></span><br><span class="line">  &#125; <span class="comment">// 格式化时调整include的顺序（按字母排序）</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-5-可选-配置文件-c-cpp-properties-json"><a href="#2-5-可选-配置文件-c-cpp-properties-json" class="headerlink" title="2.5 (可选)配置文件 c_cpp_properties.json"></a>2.5 (可选)配置文件 c_cpp_properties.json</h3><p>如果你确定不需要使用别人的库，则现在的版本（0.18.0之后）<strong>不需要创建这个文件</strong>了，cpptools会自动使用默认的设置。所以本文也不再包含此文件的配置。</p>
+<p>如果你自己编写了头文件又不在workspaceFolder下，或是使用别人的库，就需要手动创建这个文件放到<code>.vscode</code>下了。</p>
+<p>模板可以参考：<a href="https://link.zhihu.com/?target=https://github.com/Microsoft/vscode-cpptools/blob/master/Documentation/LanguageServer/MinGW.md">Microsoft/vscode-cpptools</a>。</p>
+<p>一些曾经的经验：</p>
+<ul>
+<li>库的路径要加到includePath和browse里</li>
+<li>如果需要递归包含，末尾加<code>/**</code>。</li>
+<li>这个json不允许有注释，其实按照json标准本来就不能有</li>
+<li>compilerPath好像必需是MinGW的完整路径，精确到gcc.exe，否则会提示找不到头文件；Linux下是/usr/bin/gcc；但我很久没有测试过了</li>
+<li>Windows下的目录分隔符为反斜杠，原本应使用两个反斜杠来转义，但直接用斜杠这里也接受</li>
+<li>除了配置这个文件，还需要进行别的操作。一部分可以参考下文的“多文件编译”</li>
+</ul>
+<h2 id="step-3-运行c-代码"><a href="#step-3-运行c-代码" class="headerlink" title="step.3 运行c++ 代码"></a>step.3 运行c++ 代码</h2><h3 id="方法一-Code-Runner-右键Run-code"><a href="#方法一-Code-Runner-右键Run-code" class="headerlink" title="方法一 Code Runner 右键Run code"></a>方法一 Code Runner 右键Run code</h3><p><img src="/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210909165315058.png" alt="直接运行"></p>
+<p><strong>其实Code Runner只是代替你手动输命令</strong>，功能并不强，算是适用场景不同吧。</p>
+<h3 id="方法二-编译-调试"><a href="#方法二-编译-调试" class="headerlink" title="方法二 编译+调试"></a>方法二 编译+调试</h3><p>Ctrl+Shift+B 单纯编译</p>
+<p>F5 编译加调试</p>
+<p>编译结果为.exe 文件</p>
+<p><img src="/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210909165656146.png" alt="编译结果"></p>
+<p>开始调试后，按f11可以一步一步进行，箭头所指的那行代码就是<strong>下一步要运行的代码</strong>；</p>
+<p>f5是一直运行到下一个断点，右键某一行代码可以选择一直运行到指定的那一行。</p>
+<p>对于正常的语言，这样就可以了，但cpptools不支持just my code，导致f11会进到库函数比如printf中，超级差评。只能平常用f10，遇到调用自己的函数时再用f11。</p>
+<p><strong>cmd 运行exe文件</strong></p>
+<p>进入到目录下，然后</p>
+<p>输入 xxx.exe 即可运行</p>
+<h3 id="多文件编译的情况"><a href="#多文件编译的情况" class="headerlink" title="多文件编译的情况"></a>多文件编译的情况</h3><p><img src="/2021-09-09-vscode-c-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20210910145014006.png" alt="多文件"></p>
+<p>需要输入指令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> g++ main.cpp test.cpp test.h</span></span><br></pre></td></tr></table></figure>
+
+<p>即可编译成功，运行.exe文件</p>
+<p>​    如果你想使用别人的库，比如ffmpeg，可能需要在命令中指定-I、-l（小写的L）、-L。具体参数阅读那个库的文档。还可能需要把路径添加到c_cpp_properties.json里来配置Intellisense。</p>
+<p>​    这些情况下可以考虑单独建一个工作区，不要和单文件编译的共用。其实不新建工程(Project)、只是单文件就能调试，是不利于以后使用和理解大型IDE的。不过初学也不用掌握那么多，不要觉得建工程很麻烦、不建工程就能编译很强就是了。</p>
+<h3 id="清理临时文件"><a href="#清理临时文件" class="headerlink" title="清理临时文件"></a>清理临时文件</h3><p>可也写个bat，放到工作区里，要用的时候右键Run Code：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@echo off</span><br><span class="line">echo 清理临时文件中...</span><br><span class="line">del %~dp0*.exe /q /s</span><br><span class="line">del %~dp0tempCodeRunnerFile.c /q /s</span><br><span class="line">del %~dp0a.out /q /s</span><br><span class="line">del %~dp0*.o /q /s</span><br><span class="line">echo 清理文件结束...按任意键退出</span><br><span class="line">pause &gt;nul</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+
+<p>其中%~dp0会被替换成该批处理所在目录，这是为了防止有同学选错工作目录，误删根目录下的文件；</p>
+<p>code runner的设置我也调整成了先切换到文件目录，双保险。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>Visual Studio Code 如何编写运行 C、C++ 程序？</p>
+<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/30315894/answer/1574277687">https://www.zhihu.com/question/30315894/answer/1574277687</a></p>
+<p>C/C++ for Visual Studio Code</p>
+<p><a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/languages/cpp">https://code.visualstudio.com/docs/languages/cpp</a></p>
 
     </div>
 
@@ -339,6 +443,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#step-1-GCC%E7%8E%AF%E5%A2%83%E7%9A%84%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">step.1 GCC环境的准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E4%B8%8B%E8%BD%BD%E7%BC%96%E8%AF%91%E5%99%A8"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 下载编译器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E6%88%90%E5%8A%9F"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 验证是否成功</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#step-2-%E9%85%8D%E7%BD%AEvscode%E7%8E%AF%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">step.2 配置vscode环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 安装插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-launch-json"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 修改配置文件 launch.json</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-Tasks-json"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 修改配置文件 Tasks.json</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-settings-json"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 修改配置文件 settings.json</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-%E5%8F%AF%E9%80%89-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-c-cpp-properties-json"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 (可选)配置文件 c_cpp_properties.json</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#step-3-%E8%BF%90%E8%A1%8Cc-%E4%BB%A3%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">step.3 运行c++ 代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80-Code-Runner-%E5%8F%B3%E9%94%AERun-code"><span class="nav-number">3.1.</span> <span class="nav-text">方法一 Code Runner 右键Run code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C-%E7%BC%96%E8%AF%91-%E8%B0%83%E8%AF%95"><span class="nav-number">3.2.</span> <span class="nav-text">方法二 编译+调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E6%96%87%E4%BB%B6%E7%BC%96%E8%AF%91%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">3.3.</span> <span class="nav-text">多文件编译的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%85%E7%90%86%E4%B8%B4%E6%97%B6%E6%96%87%E4%BB%B6"><span class="nav-number">3.4.</span> <span class="nav-text">清理临时文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -411,12 +516,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">128k</span>
+    <span title="站点总字数">136k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:56</span>
+    <span title="站点阅读时长">2:03</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
