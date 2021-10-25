@@ -1,3 +1,8 @@
+<!--
+ * @Author: linkenzone
+ * @Date: 2021-06-21 14:10:30
+ * @Descripttion: Do not edit
+-->
 # alexiusll的个人博客
 我的个人博客
 
@@ -52,7 +57,7 @@ $ yarn clean
 **新建博文: （需要npm或yarn全局安装 hexo)**
 
 ```bash
-$ hexo add <文章名>
+$ hexo new <文章名>
 ```
 
 
