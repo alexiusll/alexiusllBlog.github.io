@@ -21,23 +21,29 @@
     var CONFIG = {"hostname":"alexiusll.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="🔷v1.0 简要​    原本我写的公开文章一直是保存在简书的，但是最近在简书更新文章的时候，发现文章发表需要一段时间的审核，不能立即看到，还有一个问题是担心简书的安全性，如果哪天简书删库的了（虽然基本不可能，我的文章可能就都消失了。">
+  <meta name="description" content="react-three-fiber 是一个利用React的特性，来封装three.js的库，让three.js和react结合起来更方便使用。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hexo博客搭建记录v1.0">
-<meta property="og:url" content="https://alexiusll.github.io/2021-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1/index.html">
+<meta property="og:title" content="react-three-fiber 爬坑记录">
+<meta property="og:url" content="https://alexiusll.github.io/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/index.html">
 <meta property="og:site_name" content="alexiusll 的博客">
-<meta property="og:description" content="🔷v1.0 简要​    原本我写的公开文章一直是保存在简书的，但是最近在简书更新文章的时候，发现文章发表需要一段时间的审核，不能立即看到，还有一个问题是担心简书的安全性，如果哪天简书删库的了（虽然基本不可能，我的文章可能就都消失了。">
+<meta property="og:description" content="react-three-fiber 是一个利用React的特性，来封装three.js的库，让three.js和react结合起来更方便使用。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://alexiusll.github.io/2021-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1/100.png">
-<meta property="article:published_time" content="2021-06-23T06:30:27.000Z">
-<meta property="article:modified_time" content="2021-10-25T11:27:06.877Z">
+<meta property="og:image" content="https://alexiusll.github.io/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211012165253939.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211012165340153.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211012170156490.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211014151722949.png">
+<meta property="og:image" content="https://alexiusll.github.io/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211014152326597.png">
+<meta property="article:published_time" content="2021-10-12T08:46:06.000Z">
+<meta property="article:modified_time" content="2021-10-25T11:27:07.005Z">
 <meta property="article:author" content="alexiusll">
 <meta property="article:tag" content="前端">
-<meta property="article:tag" content="博客">
+<meta property="article:tag" content="React">
+<meta property="article:tag" content="threejs">
+<meta property="article:tag" content="图形学">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://alexiusll.github.io/2021-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1/100.png">
+<meta name="twitter:image" content="https://alexiusll.github.io/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211012165253939.png">
 
-<link rel="canonical" href="https://alexiusll.github.io/2021-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1/">
+<link rel="canonical" href="https://alexiusll.github.io/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/">
 
 
 <script id="page-configurations">
@@ -50,7 +56,7 @@
   };
 </script>
 
-  <title>hexo博客搭建记录v1.0 | alexiusll 的博客</title>
+  <title>react-three-fiber 爬坑记录 | alexiusll 的博客</title>
   
 
 
@@ -174,7 +180,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://alexiusll.github.io/2021-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1/">
+    <link itemprop="mainEntityOfPage" href="https://alexiusll.github.io/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/apple-touch-icon-next.png">
@@ -187,7 +193,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          hexo博客搭建记录v1.0
+          react-three-fiber 爬坑记录
         </h1>
 
         <div class="post-meta">
@@ -197,7 +203,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-06-23 14:30:27" itemprop="dateCreated datePublished" datetime="2021-06-23T14:30:27+08:00">2021-06-23</time>
+              <time title="创建时间：2021-10-12 16:46:06" itemprop="dateCreated datePublished" datetime="2021-10-12T16:46:06+08:00">2021-10-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -205,12 +211,12 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">计算机图形学</span></a>
                 </span>
             </span>
 
           
-            <span id="/2021-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1/" class="post-meta-item leancloud_visitors" data-flag-title="hexo博客搭建记录v1.0" title="阅读次数">
+            <span id="/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/" class="post-meta-item leancloud_visitors" data-flag-title="react-three-fiber 爬坑记录" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -225,8 +231,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -236,7 +242,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>1.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -255,60 +261,38 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="🔷v1-0-简要"><a href="#🔷v1-0-简要" class="headerlink" title="🔷v1.0 简要"></a>🔷v1.0 简要</h2><p>​    原本我写的公开文章一直是保存在简书的，但是最近在简书更新文章的时候，发现文章发表需要一段时间的审核，不能立即看到，还有一个问题是担心简书的安全性，如果哪天简书删库的了（虽然基本不可能，我的文章可能就都消失了。</p>
+        <p>react-three-fiber 是一个利用React的特性，来封装three.js的库，让three.js和react结合起来更方便使用。</p>
 <span id="more"></span>
-<p>​    利用Hexo来搭建博客实际上就是在本地写MarkDown文本，md文件是非常好备份的，所以安全性实际上非常好，现在写好的md文件实际上都存在了github上，我想github应该是永远不会倒闭的..</p>
-<p>​    现在博客1.0版本已经搭建好了，我还把官方样式改成了普罗米亚的，部署在这个域名下：</p>
-<p>​    <a target="_blank" rel="noopener" href="https://www.alexiusll.top/">https://www.alexiusll.top/</a></p>
-<p>​    在2022年6月之前应该都是可以访问的，域名过期了可能就要考虑是否续费，还是换域名了。</p>
-<p>​    <img src="/2021-06-23-hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95v1/100.png" alt="部署图"></p>
-<p>​    </p>
-<h2 id="📋v1-0-主要框架和技术"><a href="#📋v1-0-主要框架和技术" class="headerlink" title="📋v1.0 主要框架和技术"></a>📋v1.0 主要框架和技术</h2><ul>
-<li>使用了一个静态的博客生成器 Hexo</li>
-</ul>
-<p>官方网站：</p>
-<p><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/">https://hexo.io/zh-cn/</a></p>
-<p>其实中文的文档内容不是很全，如果要看完全体的话请切换语言为英文。</p>
-<ul>
-<li>主题使用了一个最主流的 Next</li>
-</ul>
-<p>中文网站：</p>
-<p><a target="_blank" rel="noopener" href="http://theme-next.iissnan.com/">http://theme-next.iissnan.com/</a></p>
-<p>应该是现在用的最多的一种主题，所以质量还是有保证，扩展性也很强。</p>
-<h2 id="📃v1-0-实现的功能"><a href="#📃v1-0-实现的功能" class="headerlink" title="📃v1.0 实现的功能"></a>📃v1.0 实现的功能</h2><ul>
-<li><p>写博文，博文分类，归档，标签 （基于Hexo）</p>
-</li>
-<li><p>评论 （基于valine）</p>
-</li>
-<li><p>显示 阅读次数 （基于valine）</p>
-</li>
-<li><p>百度统计接入 （似乎也没什么用..可以考虑删了）</p>
-</li>
-<li><p>显示文章字数和大致阅读时间</p>
-</li>
-<li><p>修改 Next 的原生样式</p>
-</li>
-</ul>
-<h2 id="❌部署过程中存在的坑"><a href="#❌部署过程中存在的坑" class="headerlink" title="❌部署过程中存在的坑"></a>❌部署过程中存在的坑</h2><ul>
-<li><p><strong>travis-ci 的部署文件</strong></p>
-<p>中文文档里面给的是用不了的，需要改一下branch，还有install，node_js</p>
-<p>配置文件：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">sudo:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">node_js</span></span><br><span class="line"><span class="attr">node_js:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="number">14</span> <span class="comment"># use nodejs v14 LTS</span></span><br><span class="line"><span class="attr">cache:</span> <span class="string">npm</span></span><br><span class="line"><span class="attr">install:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">yarn</span></span><br><span class="line"><span class="attr">branches:</span></span><br><span class="line">  <span class="attr">only:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">main</span> <span class="comment"># build master branch only</span></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">hexo</span> <span class="string">generate</span> <span class="comment"># generate static files</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">provider:</span> <span class="string">pages</span></span><br><span class="line">  <span class="attr">skip-cleanup:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">github-token:</span> <span class="string">$GH_TOKEN</span></span><br><span class="line">  <span class="attr">keep-history:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">on:</span></span><br><span class="line">    <span class="attr">branch:</span> <span class="string">main</span></span><br><span class="line">  <span class="attr">local-dir:</span> <span class="string">public</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="📕存在的问题"><a href="#📕存在的问题" class="headerlink" title="📕存在的问题"></a>📕存在的问题</h2><ul>
-<li><p>由于Hexo本质是其实是一个生成静态页面的工具，实际上是没有后台的，于是它有一些根本性的问题</p>
-<p>1.每次编译，所有的md文件都需要重新编译处理一次，编译速度会随着文章数量的增长而上升。所以未来有大量文章的情况下，可能会出现编译速度的问题，目前还没有看到一些好的解决方案，现在方案可以先凑合着用着。</p>
-<p>2.需要储存数据的场景下，例如评论，得储存在一些第三方的存储服务器上，例如Leancloud</p>
-</li>
-<li><p>对于图片的处理，Hexo官方的方案不是很好：</p>
-<p>在本地写md的时候，图片的url可能会制定到一个相对路径下，例如 xxx/1.png ，在本地就可以看到这个图片，没有什么问题。但是到了部署的时候，得使用url 1.png ，要去掉 xxx/ 这个前缀，要不然到了线上，这个图片就不显示。官方的意思的是我们本地写的时候应该直接就写成 1.png ，不加前缀，但是这样不是很方便，于是我加了一个国人写的插件 ： hexo-asset-link ，每次编译都要把路径重新制定一下。</p>
-</li>
-</ul>
-<h2 id="🟠未来展望"><a href="#🟠未来展望" class="headerlink" title="🟠未来展望"></a>🟠未来展望</h2><p>由于Hexo搭建博客存在一些根本性的问题，未来可能采取的方案有：</p>
-<p>1.直接搭建有后台系统的博客，但是可能得花费的时间很长，而且做的效果也不好很好</p>
-<p>2.调研一些其他的博客系统 例如 wordpress</p>
-<p>3.编译多个Hexo的网站，将比较老的文章放到另外一个Hexo网站中，不再进行编译</p>
-<p>总而言之，现在的方案应该是能支持1-2年的使用了，问题还是可以慢慢的解决。</p>
+
+
+
+<h2 id="报错记录"><a href="#报错记录" class="headerlink" title="报错记录"></a>报错记录</h2><h3 id="ts-报错-is-missing-the-following-properties-from-type"><a href="#ts-报错-is-missing-the-following-properties-from-type" class="headerlink" title="ts 报错 is missing the following properties from type"></a>ts 报错 is missing the following properties from type</h3><p><strong>解决方式：</strong></p>
+<p>来自discord</p>
+<p><img src="/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211012165253939.png" alt="image-20211012165253939"></p>
+<p>但是安装 @types/three 会引发更多的报错</p>
+<p><img src="/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211012165340153.png" alt="image-20211012165340153"></p>
+<p>部分问题似乎是之前写的不规范导致，改正后可以修复</p>
+<h3 id="source-map-loader-报错"><a href="#source-map-loader-报错" class="headerlink" title="source map loader 报错"></a>source map loader 报错</h3><p><img src="/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211012170156490.png" alt="image-20211012170156490"></p>
+<p>目前无解决方案，只能暂时忽略这个错误</p>
+<p>webpack中增加配置</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">// 忽略报错</span></span><br><span class="line"><span class="attr">ignoreWarnings</span>: [<span class="regexp">/Failed to parse source map/</span>],</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="编译出现警告"><a href="#编译出现警告" class="headerlink" title="编译出现警告"></a>编译出现警告</h3><p><img src="/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211014151722949.png" alt="image-20211014151722949"></p>
+<p>@chevrotain 的这个内部包，似乎有点不规范</p>
+<h3 id="使用-shaderMaterials-出现问题"><a href="#使用-shaderMaterials-出现问题" class="headerlink" title="使用 shaderMaterials 出现问题"></a>使用 shaderMaterials 出现问题</h3><p>然后放到mesh之类的组件里面用的话，会报出错误：</p>
+<p>Class constructors cannot be invoked without ‘new’</p>
+<p>目前尚无比较好的解决方案，只能先这样写：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Uint16Material = &#123;</span><br><span class="line">  <span class="attr">uniforms</span>: &#123;</span><br><span class="line">    <span class="attr">diffuse</span>: &#123; <span class="attr">value</span>: <span class="literal">undefined</span> &#125;,</span><br><span class="line">    <span class="attr">depth</span>: &#123; <span class="attr">value</span>: <span class="number">20</span> &#125;,</span><br><span class="line">    <span class="attr">size</span>: &#123; <span class="attr">value</span>: <span class="keyword">new</span> THREE.Vector2(<span class="number">0</span>, <span class="number">0</span>) &#125;,</span><br><span class="line">    <span class="attr">ww</span>: &#123; <span class="attr">value</span>: <span class="literal">undefined</span> &#125;,</span><br><span class="line">    <span class="attr">wl</span>: &#123; <span class="attr">value</span>: <span class="literal">undefined</span> &#125;,</span><br><span class="line">    <span class="attr">rescaleSlope</span>: &#123; <span class="attr">value</span>: <span class="number">1</span> &#125;,</span><br><span class="line">    <span class="attr">rescaleIntercept</span>: &#123; <span class="attr">value</span>: <span class="number">0</span> &#125;,</span><br><span class="line">    <span class="attr">type</span>: &#123; <span class="attr">value</span>: <span class="number">0</span> &#125;,</span><br><span class="line">    <span class="attr">numOfSlice</span>: &#123; <span class="attr">value</span>: <span class="number">0</span> &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">vertexShader</span>: RENDER_VERTEX_SHADER,</span><br><span class="line">  <span class="attr">fragmentShader</span>: RENDER_FRAGMENT_SHADER,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">mesh</span> <span class="attr">ref</span>=<span class="string">&#123;ref&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">planeGeometry</span> <span class="attr">args</span>=<span class="string">&#123;[50,</span> <span class="attr">50</span>]&#125; /&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">shaderMaterial</span> <span class="attr">attach</span>=<span class="string">&quot;material&quot;</span> <span class="attr">args</span>=<span class="string">&#123;[Uint16Material]&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">mesh</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="测试记录"><a href="#测试记录" class="headerlink" title="测试记录"></a>测试记录</h2><h3 id="在-pacs-frontend-中测试基础demo"><a href="#在-pacs-frontend-中测试基础demo" class="headerlink" title="在 pacs-frontend 中测试基础demo"></a>在 pacs-frontend 中测试基础demo</h3><p><img src="/2021-10-12-react-three-fiber-%E7%88%AC%E5%9D%91%E8%AE%B0%E5%BD%95/image-20211014152326597.png" alt="image-20211014152326597"></p>
+<p>目测来看是没有什么别的问题了，除了编译的时候，内部包会因为存在不规范而报错。</p>
+<h2 id="QA"><a href="#QA" class="headerlink" title="QA"></a>QA</h2><h3 id="为什么例如-mesh-这种标签，不需要通过import-引入？"><a href="#为什么例如-mesh-这种标签，不需要通过import-引入？" class="headerlink" title="为什么例如 mesh 这种标签，不需要通过import 引入？"></a>为什么例如 mesh 这种标签，不需要通过import 引入？</h3><p>所有three.js对象都将被视为原生JSX元素，就像你可以在常规的ReactDOM中写 <div /> 或 <span /></p>
+<p>一般的规则是，在three.js中，Fiber组件的名称以驼峰形式出现。</p>
+<p>来源 <a target="_blank" rel="noopener" href="https://docs.pmnd.rs/react-three-fiber/getting-started/your-first-scene">https://docs.pmnd.rs/react-three-fiber/getting-started/your-first-scene</a></p>
 
     </div>
 
@@ -319,7 +303,9 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
-              <a href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag"># 博客</a>
+              <a href="/tags/React/" rel="tag"># React</a>
+              <a href="/tags/threejs/" rel="tag"># threejs</a>
+              <a href="/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6/" rel="tag"># 图形学</a>
           </div>
 
         
@@ -328,13 +314,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021-06-21-Kitware-react-vtk-js-%E5%88%9D%E6%8E%A2/" rel="prev" title="Kitware/react-vtk-js 初探">
-      <i class="fa fa-chevron-left"></i> Kitware/react-vtk-js 初探
+    <a href="/2021-09-16-%E5%8D%83%E4%BC%8F%E5%B7%A5%E4%BD%9C%E5%AE%A4%E5%87%BA%E5%93%81%E3%80%8A%E6%AD%A6%E4%BE%AF%E5%8C%97%E4%BC%90%E3%80%8B%E5%85%B5%E6%A3%8B%E7%AE%80%E8%AF%84/" rel="prev" title="千伏工作室出品《武侯北伐》兵棋简评">
+      <i class="fa fa-chevron-left"></i> 千伏工作室出品《武侯北伐》兵棋简评
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021-06-23-%E4%B8%80%E6%AC%A1%E7%89%B9%E6%AE%8A%E7%9A%84%E6%97%85%E8%A1%8C%EF%BC%9A%E9%87%8D%E5%9B%9E%E6%AD%A6%E6%B1%89%E7%90%86%E5%B7%A5/" rel="next" title="一次特殊的旅行：重回武汉理工">
-      一次特殊的旅行：重回武汉理工 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -394,7 +377,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%B7v1-0-%E7%AE%80%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">🔷v1.0 简要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%93%8Bv1-0-%E4%B8%BB%E8%A6%81%E6%A1%86%E6%9E%B6%E5%92%8C%E6%8A%80%E6%9C%AF"><span class="nav-number">2.</span> <span class="nav-text">📋v1.0 主要框架和技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%93%83v1-0-%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="nav-number">3.</span> <span class="nav-text">📃v1.0 实现的功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9D%8C%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%AD%98%E5%9C%A8%E7%9A%84%E5%9D%91"><span class="nav-number">4.</span> <span class="nav-text">❌部署过程中存在的坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%93%95%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">📕存在的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9F%A0%E6%9C%AA%E6%9D%A5%E5%B1%95%E6%9C%9B"><span class="nav-number">6.</span> <span class="nav-text">🟠未来展望</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%A5%E9%94%99%E8%AE%B0%E5%BD%95"><span class="nav-number">1.</span> <span class="nav-text">报错记录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ts-%E6%8A%A5%E9%94%99-is-missing-the-following-properties-from-type"><span class="nav-number">1.1.</span> <span class="nav-text">ts 报错 is missing the following properties from type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#source-map-loader-%E6%8A%A5%E9%94%99"><span class="nav-number">1.2.</span> <span class="nav-text">source map loader 报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%87%BA%E7%8E%B0%E8%AD%A6%E5%91%8A"><span class="nav-number">1.3.</span> <span class="nav-text">编译出现警告</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-shaderMaterials-%E5%87%BA%E7%8E%B0%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.</span> <span class="nav-text">使用 shaderMaterials 出现问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95"><span class="nav-number">2.</span> <span class="nav-text">测试记录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-pacs-frontend-%E4%B8%AD%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80demo"><span class="nav-number">2.1.</span> <span class="nav-text">在 pacs-frontend 中测试基础demo</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QA"><span class="nav-number">3.</span> <span class="nav-text">QA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BE%8B%E5%A6%82-mesh-%E8%BF%99%E7%A7%8D%E6%A0%87%E7%AD%BE%EF%BC%8C%E4%B8%8D%E9%9C%80%E8%A6%81%E9%80%9A%E8%BF%87import-%E5%BC%95%E5%85%A5%EF%BC%9F"><span class="nav-number">3.1.</span> <span class="nav-text">为什么例如 mesh 这种标签，不需要通过import 引入？</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
