@@ -919,7 +919,7 @@ pre .javascript .function {
   padding-top: 0;
 }
 .container {
-  background-image: url("/images/background.jpg");
+  background-image: url("/images/background.png");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center center;
@@ -1157,7 +1157,7 @@ pre .javascript .function {
   text-align: center;
 }
 .site-description {
-  color: #999;
+  color: #b1fbd3;
   font-size: 1em;
   margin-top: 5px;
   text-align: center;
@@ -1176,7 +1176,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #94e4ff;
+  background: #ff9a8c;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
