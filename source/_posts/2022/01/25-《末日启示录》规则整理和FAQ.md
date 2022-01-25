@@ -17,6 +17,8 @@ tags:
 集石链接: https://www.gstonegames.com/game/info-3266.html
 <!-- more -->
 
+
+
 ## 前言
 
 目前版本 v1.0
@@ -28,6 +30,8 @@ tags:
 https://coralfox.notion.site/9585f83cb3ff4dd1b42c064acedc335a#518a73f56c4f442c8841a073847d9bff
 
 这里这里一些需要注意的细节和FAQ
+
+
 
 ## 配件清单
 
@@ -80,6 +84,8 @@ diy板块7张(电台，消防局，导弹发射井，富翁桌游店，废弃面
 **勘误**
 
 女鬼一张替换大扩展幻觉一张替换大扩展
+
+
 
 ## FAQ和细节
 
