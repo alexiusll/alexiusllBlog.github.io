@@ -21,23 +21,20 @@
     var CONFIG = {"hostname":"alexiusll.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="主要是orbitControls源码的解析，为了帮助自己理解three.js中摄像头操作的一些机制，为后续开发提供思路。">
+  <meta name="description" content="好久没更新博客了，随便写点东西吧，主要平时的技术笔记都整理在onenote上面了，如果放到hexo博客需要重新整理一遍，挺麻烦的。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="three.js 中控制器 orbitControls 原理解析">
-<meta property="og:url" content="https://alexiusll.github.io/2021-11-25-three-js-%E4%B8%AD%E6%8E%A7%E5%88%B6%E5%99%A8-orbitControls-%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:title" content="最近的一些感触，也不知道该取什么标题">
+<meta property="og:url" content="https://alexiusll.github.io/2022-03-01-%E6%9C%80%E8%BF%91%E7%9A%84%E4%B8%80%E4%BA%9B%E6%84%9F%E8%A7%A6%EF%BC%8C%E4%B9%9F%E4%B8%8D%E7%9F%A5%E9%81%93%E8%AF%A5%E5%8F%96%E4%BB%80%E4%B9%88%E6%A0%87%E9%A2%98/index.html">
 <meta property="og:site_name" content="alexiusll 的博客">
-<meta property="og:description" content="主要是orbitControls源码的解析，为了帮助自己理解three.js中摄像头操作的一些机制，为后续开发提供思路。">
+<meta property="og:description" content="好久没更新博客了，随便写点东西吧，主要平时的技术笔记都整理在onenote上面了，如果放到hexo博客需要重新整理一遍，挺麻烦的。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-11-25T06:28:34.000Z">
+<meta property="article:published_time" content="2022-03-01T14:43:12.000Z">
 <meta property="article:modified_time" content="2022-03-01T15:38:22.293Z">
 <meta property="article:author" content="alexiusll">
-<meta property="article:tag" content="前端">
-<meta property="article:tag" content="threejs">
-<meta property="article:tag" content="图形学">
-<meta property="article:tag" content="WebGL">
+<meta property="article:tag" content="随便写写">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://alexiusll.github.io/2021-11-25-three-js-%E4%B8%AD%E6%8E%A7%E5%88%B6%E5%99%A8-orbitControls-%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">
+<link rel="canonical" href="https://alexiusll.github.io/2022-03-01-%E6%9C%80%E8%BF%91%E7%9A%84%E4%B8%80%E4%BA%9B%E6%84%9F%E8%A7%A6%EF%BC%8C%E4%B9%9F%E4%B8%8D%E7%9F%A5%E9%81%93%E8%AF%A5%E5%8F%96%E4%BB%80%E4%B9%88%E6%A0%87%E9%A2%98/">
 
 
 <script id="page-configurations">
@@ -50,7 +47,7 @@
   };
 </script>
 
-  <title>three.js 中控制器 orbitControls 原理解析 | alexiusll 的博客</title>
+  <title>最近的一些感触，也不知道该取什么标题 | alexiusll 的博客</title>
   
 
 
@@ -174,7 +171,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://alexiusll.github.io/2021-11-25-three-js-%E4%B8%AD%E6%8E%A7%E5%88%B6%E5%99%A8-orbitControls-%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="https://alexiusll.github.io/2022-03-01-%E6%9C%80%E8%BF%91%E7%9A%84%E4%B8%80%E4%BA%9B%E6%84%9F%E8%A7%A6%EF%BC%8C%E4%B9%9F%E4%B8%8D%E7%9F%A5%E9%81%93%E8%AF%A5%E5%8F%96%E4%BB%80%E4%B9%88%E6%A0%87%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/apple-touch-icon-next.png">
@@ -187,7 +184,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          three.js 中控制器 orbitControls 原理解析
+          最近的一些感触，也不知道该取什么标题
         </h1>
 
         <div class="post-meta">
@@ -197,7 +194,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-11-25 14:28:34" itemprop="dateCreated datePublished" datetime="2021-11-25T14:28:34+08:00">2021-11-25</time>
+              <time title="创建时间：2022-03-01 22:43:12" itemprop="dateCreated datePublished" datetime="2022-03-01T22:43:12+08:00">2022-03-01</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -205,12 +202,12 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">计算机图形学</span></a>
+                  <a href="/categories/%E9%9A%8F%E6%83%B3/" itemprop="url" rel="index"><span itemprop="name">随想</span></a>
                 </span>
             </span>
 
           
-            <span id="/2021-11-25-three-js-%E4%B8%AD%E6%8E%A7%E5%88%B6%E5%99%A8-orbitControls-%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" class="post-meta-item leancloud_visitors" data-flag-title="three.js 中控制器 orbitControls 原理解析" title="阅读次数">
+            <span id="/2022-03-01-%E6%9C%80%E8%BF%91%E7%9A%84%E4%B8%80%E4%BA%9B%E6%84%9F%E8%A7%A6%EF%BC%8C%E4%B9%9F%E4%B8%8D%E7%9F%A5%E9%81%93%E8%AF%A5%E5%8F%96%E4%BB%80%E4%B9%88%E6%A0%87%E9%A2%98/" class="post-meta-item leancloud_visitors" data-flag-title="最近的一些感触，也不知道该取什么标题" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -225,8 +222,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021-11-25-three-js-%E4%B8%AD%E6%8E%A7%E5%88%B6%E5%99%A8-orbitControls-%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021-11-25-three-js-%E4%B8%AD%E6%8E%A7%E5%88%B6%E5%99%A8-orbitControls-%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022-03-01-%E6%9C%80%E8%BF%91%E7%9A%84%E4%B8%80%E4%BA%9B%E6%84%9F%E8%A7%A6%EF%BC%8C%E4%B9%9F%E4%B8%8D%E7%9F%A5%E9%81%93%E8%AF%A5%E5%8F%96%E4%BB%80%E4%B9%88%E6%A0%87%E9%A2%98/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022-03-01-%E6%9C%80%E8%BF%91%E7%9A%84%E4%B8%80%E4%BA%9B%E6%84%9F%E8%A7%A6%EF%BC%8C%E4%B9%9F%E4%B8%8D%E7%9F%A5%E9%81%93%E8%AF%A5%E5%8F%96%E4%BB%80%E4%B9%88%E6%A0%87%E9%A2%98/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -255,32 +252,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>主要是orbitControls源码的解析，为了帮助自己理解three.js中摄像头操作的一些机制，为后续开发提供思路。</p>
+        <p>好久没更新博客了，随便写点东西吧，主要平时的技术笔记都整理在onenote上面了，如果放到hexo博客需要重新整理一遍，挺麻烦的。</p>
 <span id="more"></span>
 
-<h2 id="🔵源码地址"><a href="#🔵源码地址" class="headerlink" title="🔵源码地址"></a>🔵源码地址</h2><p><a target="_blank" rel="noopener" href="https://github.com/mrdoob/three.js/blob/dev/examples/jsm/controls/OrbitControls.js">https://github.com/mrdoob/three.js/blob/dev/examples/jsm/controls/OrbitControls.js</a></p>
-<p>不属于three.js 中核心库的部分，而是在examples 中</p>
-<h2 id="🔵从构造函数入手"><a href="#🔵从构造函数入手" class="headerlink" title="🔵从构造函数入手"></a>🔵从构造函数入手</h2><p>OrbitControls 类继承了 EventDispatcher</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OrbitControls</span> <span class="keyword">extends</span> <span class="title">EventDispatcher</span> </span></span><br></pre></td></tr></table></figure>
-
-<p><strong>EventDispatcher</strong> 来自于另一个库：</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/mrdoob/eventdispatcher.js/">https://github.com/mrdoob/eventdispatcher.js/</a></p>
-<p>用来给自定义object添加事件</p>
-<p><strong>轨道控制器（OrbitControls）</strong>在代码中的使用方法：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const controls = new OrbitControls( camera, renderer.domElement );</span><br></pre></td></tr></table></figure>
-
-<p>它的构造函数的第一个参数需要传入摄像机，第二个参数传入了 渲染器的 dom元素</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">constructor</span>(<span class="params"> object, domElement </span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">		<span class="built_in">super</span>();</span><br><span class="line">    	<span class="keyword">if</span> ( domElement === <span class="literal">undefined</span> ) <span class="built_in">console</span>.warn( <span class="string">&#x27;THREE.OrbitControls: The second parameter &quot;domElement&quot; is now mandatory.&#x27;</span> );</span><br><span class="line">		<span class="keyword">if</span> ( domElement === <span class="built_in">document</span> ) <span class="built_in">console</span>.error( <span class="string">&#x27;THREE.OrbitControls: &quot;document&quot; should not be used as the target &quot;domElement&quot;. Please use &quot;renderer.domElement&quot; instead.&#x27;</span> );</span><br><span class="line"></span><br><span class="line">		<span class="built_in">this</span>.object = object;</span><br><span class="line">		<span class="built_in">this</span>.domElement = domElement;</span><br><span class="line">		<span class="built_in">this</span>.domElement.style.touchAction = <span class="string">&#x27;none&#x27;</span>; <span class="comment">// disable touch scroll</span></span><br><span class="line">    	...</span><br></pre></td></tr></table></figure>
-
-<p>后面对一些参数进行了初设化（只展示部分）：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Set to false to disable this control</span></span><br><span class="line"><span class="built_in">this</span>.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// &quot;target&quot; sets the location of focus, where the object orbits around</span></span><br><span class="line"><span class="built_in">this</span>.target = <span class="keyword">new</span> Vector3();</span><br><span class="line"></span><br><span class="line"><span class="comment">// How far you can dolly in and out ( PerspectiveCamera only )</span></span><br><span class="line"><span class="built_in">this</span>.minDistance = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">this</span>.maxDistance = <span class="literal">Infinity</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// How far you can zoom in and out ( OrthographicCamera only )</span></span><br><span class="line"><span class="built_in">this</span>.minZoom = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">this</span>.maxZoom = <span class="literal">Infinity</span>;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="🔵reset-方法"><a href="#🔵reset-方法" class="headerlink" title="🔵reset 方法"></a>🔵reset 方法</h2><p><strong>源码：</strong></p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.reset = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">	scope.target.copy( scope.target0 );</span><br><span class="line">	scope.object.position.copy( scope.position0 );</span><br><span class="line">	scope.object.zoom = scope.zoom0;</span><br><span class="line"></span><br><span class="line">	scope.object.updateProjectionMatrix();</span><br><span class="line">	scope.dispatchEvent( _changeEvent );</span><br><span class="line"></span><br><span class="line">	scope.update();</span><br><span class="line"></span><br><span class="line">	state = STATE.NONE;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>这里使用了 state 来保存之前的 camera状态</p>
+<h2 id="关于最近看的视频"><a href="#关于最近看的视频" class="headerlink" title="关于最近看的视频"></a>关于最近看的视频</h2><p>​        b站上有一个做僵尸毁灭工程攻略向的up主叫 <strong>Arlene_Libitina</strong>，平时时不时会看她的视频，最近她更了一个视频叫《我评论区的”乐子人”是怎么变少的》，里面有些话我挺有共鸣的：</p>
+<blockquote>
+<p>“其实，大家是害怕写下的东西没人会在意吧，花费了那么多心血，写下的真心实意的评价，得来的点赞数远不比一些玩梗的评价高，把信息浓缩成梗，接受程度更高，能得到更多人的认同，同时，还能让人会心一笑，何乐而不为呢？<strong>而且，如果写的东西，自己都不在乎，就不会受到伤害吧。</strong>一旦接受了这样的设定，是不是离所谓的”乐子人“不远了呢？再严重一些，是不是自己也会参与钓鱼这样的活动了呢？好像，只要我们在这种虚幻的泡影中，继续沉醉自己，就可以一直开心了呢？可是，最重要的，我们的痕迹在哪里？</p>
+<p>———————— Arlene_Libitina</p>
+</blockquote>
+<p>​        以前我也看过一些视频，现在网络环境让人的表达能力越来越弱了，我的表达能力就很差，写一段文字，或者说出一段比较流畅的话，我可能需要比别人更长的时间去组织语言，我也不知道这种能力是否能被锻炼，还是有些人天生会内向不擅长表达一些。梗或者meme在互联网上传播，不过是各种论坛社区，还是最具有”后现代主义“特点的贴吧，网民说话似乎都要借助meme。没有meme好像就不会去表达自己了，网络meme确实有它的作用所在，比如它可以帮助我们快速识别我们是否是同一个群体，例如你经常说”正确的“，“错误的”，“xxx真的是”，那你一定是v老嗨，大概率来自v8。很多时候meme也确实让我们会心一笑。</p>
+<p>​        网络上的乐子人也越来越多，包括我可能也算乐子人，虽然我平时基本只是做网络观察，不会参与到社区讨论之中。我觉得乐子人的核心可能就如AL小姐所说”如果写的东西，自己都不在乎，就不会受到伤害吧。“，我发现我自己也越来越不会向外界表达自己的真实感受，更多的时候我可能在玩梗或者在yygq什么的。因为认真写的东西，说的话，可能找不到别人的认同，也不一定能传达给别人，甚至有可能被别人攻击。现在的互联网环境我感觉也越来越容不下不一样的声音，你发表一些不符合主流的观点，可能会被人群起而攻之。那倒不如把心之壁加厚好了，说一些自己都不认同的话，或者直接重复别人的话或者玩meme，那么即使你被攻击了，也无所谓，因为反正我说的话只是乐子而已，不是真心实意。</p>
+<p>​        于是，一些网络社区的环境聊天环境，永远都是一些重复的发言，各种玩烂的meme，虽然也会看到一些人认真打出来的回复，但是并不能成为主流，似乎我们已经习惯了去重复别人的话，习惯了把内心的真实想法隐藏起来。</p>
+<p>​        不知道为啥突然写了这么多奇怪的东西…我自己也常常看贴吧什么的，或者逛一逛各种网络社区，对于各种贴吧上的诡异发言我也看的挺乐的。我在这里写这么多，也不是想呼吁或者反思什么，互联网社区的发展都有它背后的底层逻辑（也许可以从后现代主义去思考？，如今的互联网环境变成这样有它的必然性。从v圈来说，以前的时代，大家都是MMR(和乐子人想法，萌萌人)，大家会去真心喜欢某个虚拟主播，会去刷”awsl“，”想屁吃“，那个时代大家的攻击性都不强，v吧也完全不成气候。现在就完全不一样了，自从Hololive退出中国，很多曾经的MMR破防，变成了所谓的乐子人，心之壁变厚，可能现在去看某个主播可能并不是真的喜欢，而是纯粹为了找乐子找节目效果罢了。</p>
+<p>​        但是总是写着一些自己都不在乎东西，我觉得不好，还是该多写写自己，表达自己的想法，即使表达能力不强，要不然心之壁要怎么打破呢？我很喜欢新海诚的《言叶之庭》这部作品，因为它表达的就是人与人之间的交往总是在互相试探，小心翼翼希望不伤害对方，但是这样永远没办法打破心之壁，我们应该勇于传达自己的真实想法，即使是我们知道表达了之后会有些不好的结果。</p>
+<p>​        …写了这么多奇怪的东西，不过这个博客也没啥人看啦，哈哈…</p>
+<p>​        </p>
 
     </div>
 
@@ -290,10 +276,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
-              <a href="/tags/threejs/" rel="tag"># threejs</a>
-              <a href="/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6/" rel="tag"># 图形学</a>
-              <a href="/tags/WebGL/" rel="tag"># WebGL</a>
+              <a href="/tags/%E9%9A%8F%E4%BE%BF%E5%86%99%E5%86%99/" rel="tag"># 随便写写</a>
           </div>
 
         
@@ -302,13 +285,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021-10-30-FIBBR%E8%8F%B2%E4%BC%AF%E5%B0%94%E6%B7%B7%E5%90%88%E5%85%89%E7%BA%A4USB%E6%95%B0%E6%8D%AE%E7%BA%BF%E7%AE%80%E8%AF%84/" rel="prev" title="FIBBR菲伯尔混合光纤USB数据线简评">
-      <i class="fa fa-chevron-left"></i> FIBBR菲伯尔混合光纤USB数据线简评
+    <a href="/2022-01-25-%E3%80%8A%E6%9C%AB%E6%97%A5%E5%90%AF%E7%A4%BA%E5%BD%95%E3%80%8B%E8%A7%84%E5%88%99%E6%95%B4%E7%90%86%E5%92%8CFAQ/" rel="prev" title="《末日启示录》规则整理和FAQ">
+      <i class="fa fa-chevron-left"></i> 《末日启示录》规则整理和FAQ
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021-12-15-Vscode%E4%B8%AD%E4%BD%BF%E7%94%A8shader-glsl%E7%9A%84%E6%95%B4%E7%90%86/" rel="next" title="Vscode中使用shader glsl的整理">
-      Vscode中使用shader glsl的整理 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -368,7 +348,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%B5%E6%BA%90%E7%A0%81%E5%9C%B0%E5%9D%80"><span class="nav-number">1.</span> <span class="nav-text">🔵源码地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%B5%E4%BB%8E%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%85%A5%E6%89%8B"><span class="nav-number">2.</span> <span class="nav-text">🔵从构造函数入手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%B5reset-%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">🔵reset 方法</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%9C%80%E8%BF%91%E7%9C%8B%E7%9A%84%E8%A7%86%E9%A2%91"><span class="nav-number">1.</span> <span class="nav-text">关于最近看的视频</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
