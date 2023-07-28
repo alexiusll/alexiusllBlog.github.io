@@ -121,6 +121,7 @@ menu:
   tags: /tags/ || fa fa-tags
   categories: /categories/ || fa fa-th
   archives: /archives/ || fa fa-archive
+  friends: /friends/ || fa fa-link
   #schedule: /schedule/ || fa fa-calendar
   #sitemap: /sitemap.xml || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
@@ -199,12 +200,12 @@ social_icons:
 # Blog rolls
 links_settings:
   icon: fa fa-link
-  title: Links
-  # Available values: block | inline
+  title: link
+  Available values: block | inline
   layout: block
 
 links:
-  #Title: http://yoursite.com
+  # Title: http://www.baidu.com
 
 # Table of Contents in the Sidebar
 # Front-matter variable (unsupport wrap expand_all).
@@ -249,6 +250,7 @@ post_meta:
     enable: false # 在别的地方拷贝代码，会出现更新时间的问题
     another_day: true
   categories: true
+
 
 # Post wordcount display settings
 # Dependencies: https://github.com/theme-next/hexo-symbols-count-time
