@@ -113,8 +113,8 @@ marked:
 symbols_count_time:
   symbols: true # 文章字数
   time: true # 阅读时间
-  total_symbols: true # 所有文章总字数
-  total_time: true # 所有文章阅读中时长
+  total_symbols: false # 所有文章总字数
+  total_time: false # 所有文章阅读中时长
   exclude_codeblock: false
   awl: 4
   wpm: 275
