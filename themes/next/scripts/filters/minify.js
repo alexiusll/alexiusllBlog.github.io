@@ -50,4 +50,8 @@ hexo.extend.filter.register('after_generate', () => {
   } else if (theme.scheme === 'Pisces' || theme.scheme === 'Gemini') {
     hexo.route.remove('js/schemes/muse.js');
   }
+  // 来自新版代码
+  if (!theme.utterances.enable || !theme.utterances.repo) {
+    hexo.route.remove('js/third-party/comments/utterances.js');
+  }
 });

@@ -570,8 +570,8 @@ comments:
   # Available values: tabs | buttons
   style: tabs
   # Choose a comment system to be displayed by default.
-  # Available values: changyan | disqus | disqusjs | gitalk | livere | valine
-  active: valine
+  # Available values: changyan | disqus | disqusjs | gitalk | livere | valine | utterances
+  active: utterances
   # Setting `true` means remembering the comment system selected by the visitor.
   storage: true
   # Lazyload all comment systems.
@@ -615,7 +615,7 @@ changyan:
 # Valine
 # For more information: https://valine.js.org, https://github.com/xCss/Valine
 valine:
-  enable: true
+  enable: false
   appid: taK3ClN74qMXMOLjbwinsFWY-gzGzoHsz # Your leancloud application appid
   appkey: 0TM4FFbzI0dKrjeorfF42vvx # Your leancloud application appkey
   notify: false # Mail notifier
@@ -1005,3 +1005,13 @@ images: images
 # auto_excerpt:
 #   enable: true
 #   length: 150
+
+# 增加 utterances 评论
+
+# Utterances
+# For more information: https://utteranc.es
+utterances: 
+  enable: true
+  repo: "alexiusll/alexiusll.github.io"
+  issue_term: "pathname"
+  theme: "github-light"
