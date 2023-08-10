@@ -3,12 +3,14 @@
  * @Date: 2021-06-21 14:10:30
  * @Descripttion: Do not edit
 -->
+
 # alexiusll的个人博客
+
 我的个人博客
 
-域名已经申请，可以直接访问：
+域名已经恢复，可以直接访问：
 
-https://www.alexiusll.top/
+https://www.alexiusll.cn
 
 ## 💙v1.0 样式
 
@@ -17,16 +19,10 @@ https://www.alexiusll.top/
 ## 🎈实现方式
 
 - 博客搭建 Hexo
-
 - 主题 Next
-
 - 评论功能，点击显示 valine
-
 - 自动化部署 Travis CI
-
 - 各种Hexo的插件 （具体看package.json 和next的配置文件)
-
-  
 
 ## 📋 基础使用
 
@@ -60,13 +56,9 @@ $ yarn clean
 $ hexo new <文章名>
 ```
 
-
-
 更多指令请参考 Hexo文档
 
 并且全局安装 Hexo来执行
-
-
 
 ## 📗已经实现的功能
 
@@ -77,10 +69,7 @@ $ hexo new <文章名>
 - 显示文章字数和大致阅读时间
 - 修改 Next 的原生样式
 
-
-
 ## 🔵TODO...
 
 - 优化部署速度
 - 完善对样式的修改，美化博客
-
