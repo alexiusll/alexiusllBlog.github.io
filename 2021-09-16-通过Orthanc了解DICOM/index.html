@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
+<meta name="generator" content="Hexo 5.4.2">
 <meta name="baidu-site-verification" content="code-ipFSuNxhZV" />
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
@@ -18,7 +18,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"alexiusll.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"alexiusll.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="原文:https:&#x2F;&#x2F;book.orthanc-server.com&#x2F;dicom-guide.html本文的目的旨在帮助开发者了解DICOM文件的格式，这里提供全文的翻译。">
@@ -45,7 +45,7 @@
 <meta property="og:image" content="https://alexiusll.github.io/2021-09-16-%E9%80%9A%E8%BF%87Orthanc%E4%BA%86%E8%A7%A3DICOM/CMoveGui2.png">
 <meta property="og:image" content="https://alexiusll.github.io/2021-09-16-%E9%80%9A%E8%BF%87Orthanc%E4%BA%86%E8%A7%A3DICOM/image-20210916171554857.png">
 <meta property="article:published_time" content="2021-09-16T07:27:11.000Z">
-<meta property="article:modified_time" content="2023-08-10T03:06:01.952Z">
+<meta property="article:modified_time" content="2024-06-26T13:48:28.827Z">
 <meta property="article:author" content="alexiusll">
 <meta property="article:tag" content="医学影像处理">
 <meta property="article:tag" content="Dicom">
@@ -133,6 +133,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -162,16 +163,48 @@
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">25</span></a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于我</a>
+
+  </li>
         <li class="menu-item menu-item-friends">
 
     <a href="/friends/" rel="section"><i class="fa fa-link fa-fw"></i>朋友们</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -385,7 +418,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;DicomModalities&quot; : &#123;</span><br><span class="line">    &quot;getscu&quot; : [ &quot;GETSCU&quot;, &quot;localhost&quot;, 2000 ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>有了这个配置，下面是一个示例命令行，使用DCMTK工具包调用Orthanc的C-Get SCP，并给出一些已知的StudyInstanceUID:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> getscu -v localhost 4242 -aec ORTHANC -k <span class="string">&quot;0008,0052=STUDY&quot;</span> -k <span class="string">&quot;0020,000d=1.2.840.113543.6.6.4.7.64067529866380271256212683512383713111129&quot;</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">getscu -v localhost 4242 -aec ORTHANC -k <span class="string">&quot;0008,0052=STUDY&quot;</span> -k <span class="string">&quot;0020,000d=1.2.840.113543.6.6.4.7.64067529866380271256212683512383713111129&quot;</span></span></span><br></pre></td></tr></table></figure>
 
 <p>注意:从Orthanc 1.9.7开始，Orthanc只实现C-Get作为服务类提供者(SCP)。Orthanc目前不支持使用C-Get作为服务类用户(SCU)。</p>
 <h3 id="使用HTTP而不是DICOM协议"><a href="#使用HTTP而不是DICOM协议" class="headerlink" title="使用HTTP而不是DICOM协议"></a>使用HTTP而不是DICOM协议</h3><p>​    我们坚持DICOM协议本质上针对的是单个医院的内部网，而不是互联网或云，以此来总结对DICOM的简要概述。该协议可能会被出站防火墙阻止，而且没有约定确保所有医院的AETs是全球唯一的。</p>
@@ -544,7 +577,7 @@
 <div class="copyright">
   
   &copy; 2021 – 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -587,6 +620,10 @@
   
 
 
+
+
+  
+<script src="/js/local-search.js"></script>
 
 
 
